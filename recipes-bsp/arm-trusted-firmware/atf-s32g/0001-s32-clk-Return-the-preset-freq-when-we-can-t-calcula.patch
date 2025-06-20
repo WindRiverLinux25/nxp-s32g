@@ -17,6 +17,8 @@ due to the missing of the clock's parent. In this case, we choose to
 return the preset frequency for these clocks to fix the getting rate
 error in u-boot and linux.
 
+Upstream-Status: Pending
+
 Signed-off-by: Kevin Hao <kexin.hao@windriver.com>
 ---
  drivers/nxp/s32/clk/get_rate.c | 4 +---

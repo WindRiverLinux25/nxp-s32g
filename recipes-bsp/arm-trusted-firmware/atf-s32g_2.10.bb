@@ -38,6 +38,8 @@ BL31_HANDLE ??= ""
 BL32_HANDLE ??= ""
 BL33_HANDLE ??= ""
 
+DDR_FW_PATH ?= ""
+
 HSE_ARGS = " \
               HSE_SUPPORT=1 \
               "
@@ -155,7 +157,7 @@ do_compile() {
                          "
             fi
 
-            oe_runmake -C ${S} DTB_FILE_NAME=${dtb} BUILD_BASE=$build_base PLAT=${plat} BL33=$bl33_bin BL33DIR=$bl33_dir MKIMAGE_CFG=$uboot_cfg MKIMAGE=mkimage $optee_arg $hse_fw_dir $fip_location $bl_keys all
+            oe_runmake -C ${S} DTB_FILE_NAME=${dtb} BUILD_BASE=$build_base PLAT=${plat} BL33=$bl33_bin BL33DIR=$bl33_dir MKIMAGE_CFG=$uboot_cfg MKIMAGE=mkimage $optee_arg $hse_fw_dir $fip_location $bl_keys DDR_FW_BIN_PATH=${DDR_FW_PATH} all
 
             if ${SCMI_DTB_NODE_CHANGE}; then
                 oe_runmake -C "${S}" dtbs

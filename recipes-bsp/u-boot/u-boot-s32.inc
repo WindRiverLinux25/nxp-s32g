@@ -11,25 +11,12 @@ LIC_FILES_CHKSUM = " \
     file://Licenses/lgpl-2.1.txt;md5=4fbd65380cdd255951079008b364516c \
 "
 
-FILESEXTRAPATHS:prepend := "${COREBASE}/meta/recipes-bsp/u-boot/files:"
-CVE_PATCHES = " \
-    file://CVE-2024-57254.patch \
-    file://CVE-2024-57255.patch \
-    file://CVE-2024-57256.patch \    
-    file://CVE-2024-57257-nxp-s32g.patch \
-    file://CVE-2024-57258-1.patch \
-    file://CVE-2024-57258-2.patch \
-    file://CVE-2024-57258-3.patch \
-    file://CVE-2024-57259.patch \
-"
-
 HSE_SUPPORT_CFG = " \
     file://hse_support.cfg \
 "
 
-SRC_URI = "git://github.com/nxp-auto-linux/u-boot.git;protocol=https;branch=release/bsp43.0-2022.04"
+SRC_URI = "git://github.com/nxp-auto-linux/u-boot.git;protocol=https;branch=release/bsp44.0-2022.04"
 SRC_URI += " \
-    ${CVE_PATCHES} \
     file://0001-Revert-arch-s32cc-ERR051257-shouldn-t-be-applied-for.patch \
     file://0001-Revert-s32cc-mmc-Enable-MMC_IO_VOLTAGE.patch \
     file://0001-tools-s32ccimage-add-reserved-member-for-struct-prog.patch \
@@ -46,7 +33,7 @@ SRC_URI += " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'optee', 'file://optee_config.cfg', '', d)} \
 "
 
-SRCREV = "c01b3bf7b109d2833c61dbce74d53769be605d97"
+SRCREV = "9a003232781ee9999d7e41a1cd62024400794560"
 
 PATCHTOOL = "git"
 SCMVERSION = "y"

@@ -5,7 +5,7 @@ DESCRIPTION = "U-boot provided by NXP with focus on S32 chipsets"
 PROVIDES += "u-boot"
 
 INHIBIT_DEFAULT_DEPS = "1"
-DEPENDS:append = " libgcc virtual/${TARGET_PREFIX}gcc python3 dtc-native bison-native"
+DEPENDS:append = " libgcc virtual/cross-cc python3 dtc-native bison-native"
 
 inherit nxp-u-boot-localversion
 

@@ -1,4 +1,4 @@
-From b5939ce17687b9dd02b066194d836b8867ffbf26 Mon Sep 17 00:00:00 2001
+From 553b46203163ed3900a299b179379c44a4feb4d4 Mon Sep 17 00:00:00 2001
 From: Zhantao Tang <zhantao.tang@windriver.com>
 Date: Tue, 14 May 2024 03:24:51 +0000
 Subject: [PATCH] Revert "s32cc: mmc: Enable 'MMC_IO_VOLTAGE'"
@@ -13,17 +13,17 @@ Signed-off-by: Zhantao Tang <zhantao.tang@windriver.com>
  1 file changed, 1 deletion(-)
 
 diff --git a/arch/arm/mach-s32/Kconfig b/arch/arm/mach-s32/Kconfig
-index 3a9a9d2157..31f178f64f 100644
+index 670bdd7a..25f46907 100644
 --- a/arch/arm/mach-s32/Kconfig
 +++ b/arch/arm/mach-s32/Kconfig
-@@ -66,7 +66,6 @@ config NXP_S32CC
- 	select MACH_S32
- 	select MMC_HS400_ES_SUPPORT
- 	select MMC_HS400_SUPPORT
--	select MMC_IO_VOLTAGE
- 	select MTD
- 	select NVMEM
- 	select OF_BOARD
+@@ -38,7 +38,6 @@ config NXP_S32CC
+ 	imply MISC
+ 	imply MMC_HS400_ES_SUPPORT
+ 	imply MMC_HS400_SUPPORT
+-	imply MMC_IO_VOLTAGE
+ 	imply MP
+ 	imply NET_RANDOM_ETHADDR
+ 	imply NVME_PCI
 -- 
 2.34.1
 

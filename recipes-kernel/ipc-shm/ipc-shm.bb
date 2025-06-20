@@ -18,6 +18,7 @@ SRCREV = "e90d0a18eb6d53f1faa09739f3d1c00f6f4eed8c"
 SRC_URI:append = " \
 	file://0001-shm-sample-use-strncpy-instead-of-strcpy.patch \
 	file://0001-ipc-shm-Drop-the-THIS_MODULE-argument-from-class_cre.patch \
+	file://0001-ipc-shm-change-return-type-to-void-to-compatible-wit.patch \
 "
 
 S = "${WORKDIR}/git"

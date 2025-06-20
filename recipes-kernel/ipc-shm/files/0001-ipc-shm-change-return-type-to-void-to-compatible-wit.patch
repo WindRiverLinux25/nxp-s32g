@@ -1,0 +1,38 @@
+From d69652aa8db853aeb987a8be236dafabcb3d5a82 Mon Sep 17 00:00:00 2001
+From: Zhantao Tang <zhantao.tang@windriver.com>
+Date: Wed, 4 Jun 2025 12:09:33 +0800
+Subject: [PATCH] ipc-shm: change return type to void to compatible with latest
+ kernel codes
+
+Upstream-Status: Pending
+
+Signed-off-by: Zhantao Tang <zhantao.tang@windriver.com>
+---
+ os_kernel/ipc-uio.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/os_kernel/ipc-uio.c b/os_kernel/ipc-uio.c
+index d96199f..74eb314 100644
+--- a/os_kernel/ipc-uio.c
++++ b/os_kernel/ipc-uio.c
+@@ -328,7 +328,7 @@ fail_alloc_chrdev_region:
+ 
+ 
+ /* Platform driver remove methods */
+-static int ipc_shm_uio_remove(struct platform_device *pdev)
++static void ipc_shm_uio_remove(struct platform_device *pdev)
+ {
+ 	int i;
+ 
+@@ -348,8 +348,6 @@ static int ipc_shm_uio_remove(struct platform_device *pdev)
+ 	}
+ 
+ 	shm_dbg("device removed\n");
+-
+-	return 0;
+ }
+ 
+ void *ipc_os_map_intc(void)
+-- 
+2.34.1
+

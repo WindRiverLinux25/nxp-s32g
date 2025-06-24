@@ -1,0 +1,313 @@
+From 971eaea50af56e41975aed6a9422084ec22b1fa6 Mon Sep 17 00:00:00 2001
+From: Zhantao Tang <zhantao.tang@windriver.com>
+Date: Tue, 24 Jun 2025 11:13:39 +0800
+Subject: [PATCH] pfeng: update to compatible with v6.12 kernel
+
+Now the pfe driver is updated to v1.9.0 version, which is compatible with
+v6.6 kernel codes, while the current linux kernel version in LTS25 is v6.12,
+so there are some inconsistent codes in pfe driver, which will cause build
+errors.
+
+This patch is to fix these build errors, in detail, the following items are
+updated:
+ 1. change pfeng_drv_remove() to void type
+ 2. add 'static' declaration for those functions only be called in its
+    definition file
+ 3. update the second param type 'struct ethtool_ts_info' to
+    'struct kernel_ethtool_ts_info' in pfeng_ethtool_get_ts_info()
+ 4. remove pfeng_hif_slave_suspend/resmue() codes, which are not
+    used in current driver codes
+ 5. other changes
+
+Upstream-Status: Pending
+
+Signed-off-by: Zhantao Tang <zhantao.tang@windriver.com>
+---
+ sw/linux-pfeng/pfeng-drv.c             |  8 +++-----
+ sw/linux-pfeng/pfeng-ethtool.c         |  6 +++---
+ sw/linux-pfeng/pfeng-hif.c             | 24 ------------------------
+ sw/linux-pfeng/pfeng-hwts.c            |  2 +-
+ sw/linux-pfeng/pfeng-netif.c           |  4 ++--
+ sw/linux-pfeng/pfeng-ptp.c             |  8 ++++----
+ sw/linux-pfeng/pfeng-slave-drv.c       |  6 ++----
+ sw/linux-pfeng/pfeng.h                 |  6 +-----
+ sw/oal/src/oal_mm_linux.c              |  2 +-
+ sw/oal/src/oal_time_linux.c            |  1 +
+ sw/pfe_platform/src/pfe_phy_if_slave.c |  4 ++--
+ 11 files changed, 20 insertions(+), 51 deletions(-)
+
+diff --git a/sw/linux-pfeng/pfeng-drv.c b/sw/linux-pfeng/pfeng-drv.c
+index 24d83a7..d99fd57 100644
+--- a/sw/linux-pfeng/pfeng-drv.c
++++ b/sw/linux-pfeng/pfeng-drv.c
+@@ -210,7 +210,7 @@ static int pfeng_pfe_reset(struct pfeng_priv *priv)
+  * Description: this function calls the main to free the net resources
+  * and releases the platform resources.
+  */
+-static int pfeng_drv_remove(struct platform_device *pdev)
++static void pfeng_drv_remove(struct platform_device *pdev)
+ {
+ 	struct device *dev = &pdev->dev;
+ 	struct pfeng_priv *priv = dev_get_drvdata(dev);
+@@ -223,14 +223,14 @@ static int pfeng_drv_remove(struct platform_device *pdev)
+ 
+ 	if (!priv) {
+ 		HM_MSG_DEV_ERR(dev, "Removal failed. No priv data.\n");
+-		return -ENOMEM;
++		return;
+ 	}
+ 
+ #ifdef PFE_CFG_MULTI_INSTANCE_SUPPORT
+ 	ret = pfeng_gpr_ip_ready_set(dev, false);
+ 	if (ret) {
+ 		HM_MSG_DEV_ERR(dev, "Failed to signal IP not ready: %d\n", ret);
+-		return ret;
++		return;
+ 	}
+ 
+ #ifdef PFE_CFG_FCI_ENABLE
+@@ -302,8 +302,6 @@ static int pfeng_drv_remove(struct platform_device *pdev)
+ 
+ 	pm_runtime_put_noidle(dev);
+ 	pm_runtime_disable(dev);
+-
+-	return 0;
+ }
+ 
+ static int pfeng_validate_emac_speeds(struct pfeng_priv *priv)
+diff --git a/sw/linux-pfeng/pfeng-ethtool.c b/sw/linux-pfeng/pfeng-ethtool.c
+index c74d190..fe43a02 100644
+--- a/sw/linux-pfeng/pfeng-ethtool.c
++++ b/sw/linux-pfeng/pfeng-ethtool.c
+@@ -20,8 +20,8 @@ static void pfeng_ethtool_getdrvinfo(struct net_device *netdev, struct ethtool_d
+ #endif
+ 
+ 	/* driver */
+-	strlcpy(info->driver, PFENG_DRIVER_NAME, sizeof(info->version));
+-	strlcpy(info->version, PFENG_DRIVER_VERSION, sizeof(info->version));
++	strscpy(info->driver, PFENG_DRIVER_NAME, sizeof(info->version));
++	strscpy(info->version, PFENG_DRIVER_VERSION, sizeof(info->version));
+ 
+ #ifdef PFE_CFG_PFE_MASTER
+ 	/* fw_version */
+@@ -33,7 +33,7 @@ static void pfeng_ethtool_getdrvinfo(struct net_device *netdev, struct ethtool_d
+ #endif
+ }
+ 
+-static int pfeng_ethtool_get_ts_info(struct net_device *netdev, struct ethtool_ts_info *info)
++static int pfeng_ethtool_get_ts_info(struct net_device *netdev, struct kernel_ethtool_ts_info *info)
+ {
+ 	struct pfeng_netif *netif = netdev_priv(netdev);
+ 
+diff --git a/sw/linux-pfeng/pfeng-hif.c b/sw/linux-pfeng/pfeng-hif.c
+index 4928c8b..70c7ae9 100644
+--- a/sw/linux-pfeng/pfeng-hif.c
++++ b/sw/linux-pfeng/pfeng-hif.c
+@@ -99,30 +99,6 @@ int pfeng_hif_chnl_start(struct pfeng_hif_chnl *chnl)
+ 	return 0;
+ }
+ 
+-int pfeng_hif_slave_suspend(struct pfeng_priv *priv)
+-{
+-	struct pfeng_hif_chnl *chnl;
+-	int i;
+-
+-	pfeng_priv_for_each_chnl(priv, i, chnl)
+-		if (chnl->status >= PFENG_HIF_STATUS_ENABLED)
+-			pfeng_hif_chnl_stop(chnl);
+-
+-	return 0;
+-}
+-
+-int pfeng_hif_slave_resume(struct pfeng_priv *priv)
+-{
+-	struct pfeng_hif_chnl *chnl;
+-	int i;
+-
+-	pfeng_priv_for_each_chnl(priv, i, chnl)
+-		if (chnl->status >= PFENG_HIF_STATUS_ENABLED)
+-			pfeng_hif_chnl_start(chnl);
+-
+-	return 0;
+-}
+-
+ /**
+  * @brief		HIF channel ISR
+  * @details		Will be called by HIF channel instance when an event has occurred
+diff --git a/sw/linux-pfeng/pfeng-hwts.c b/sw/linux-pfeng/pfeng-hwts.c
+index 767b7b8..2a392ac 100644
+--- a/sw/linux-pfeng/pfeng-hwts.c
++++ b/sw/linux-pfeng/pfeng-hwts.c
+@@ -184,7 +184,7 @@ int pfeng_hwts_ioctl_get(struct pfeng_netif *netif, struct ifreq *rq)
+ 	return copy_to_user(rq->ifr_data, &netif->tshw_cfg, sizeof(netif->tshw_cfg)) ? -EFAULT : 0;
+ }
+ 
+-int pfeng_hwts_ethtool(struct pfeng_netif *netif, struct ethtool_ts_info *info)
++int pfeng_hwts_ethtool(struct pfeng_netif *netif, struct kernel_ethtool_ts_info *info)
+ {
+ 	if (!netif->priv->clk_ptp_reference || pfeng_netif_is_aux(netif)) {
+ 		info->so_timestamping |= SOF_TIMESTAMPING_TX_SOFTWARE |
+diff --git a/sw/linux-pfeng/pfeng-netif.c b/sw/linux-pfeng/pfeng-netif.c
+index 70a4ca7..2353922 100644
+--- a/sw/linux-pfeng/pfeng-netif.c
++++ b/sw/linux-pfeng/pfeng-netif.c
+@@ -1288,7 +1288,7 @@ err:
+ }
+ 
+ #ifdef PFE_CFG_PFE_SLAVE
+-void pfeng_netif_slave_work_handler(struct work_struct *work)
++static void pfeng_netif_slave_work_handler(struct work_struct *work)
+ {
+ 	struct pfeng_netif* netif = container_of(work, struct pfeng_netif, ihc_slave_work);
+ 	int ret;
+@@ -1435,7 +1435,7 @@ static struct pfeng_netif *pfeng_netif_logif_create(struct pfeng_priv *priv, str
+ #endif /* PFE_CFG_PFE_SLAVE_PHY */
+ 
+ 	/* Set up explicit device name based on platform names */
+-	strlcpy(netdev->name, netif_cfg->name, IFNAMSIZ);
++	strscpy(netdev->name, netif_cfg->name, IFNAMSIZ);
+ 
+ 	netdev->netdev_ops = &pfeng_netdev_ops;
+ 
+diff --git a/sw/linux-pfeng/pfeng-ptp.c b/sw/linux-pfeng/pfeng-ptp.c
+index 802270f..6c2afd0 100644
+--- a/sw/linux-pfeng/pfeng-ptp.c
++++ b/sw/linux-pfeng/pfeng-ptp.c
+@@ -71,7 +71,7 @@ static int pfeng_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
+ 	return ret;
+ }
+ 
+-int pfeng_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
++static int pfeng_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
+ {
+ 	struct pfeng_netif *netif = container_of(ptp, struct pfeng_netif, ptp_ops);
+ 	struct pfeng_priv *priv = netif->priv;
+@@ -109,7 +109,7 @@ int pfeng_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
+ 	return ret;
+ }
+ 
+-int pfeng_ptp_gettime64(struct ptp_clock_info *ptp, struct timespec64 *ts)
++static int pfeng_ptp_gettime64(struct ptp_clock_info *ptp, struct timespec64 *ts)
+ {
+ 	struct pfeng_netif *netif = container_of(ptp, struct pfeng_netif, ptp_ops);
+ 	struct pfeng_priv *priv = netif->priv;
+@@ -139,7 +139,7 @@ int pfeng_ptp_gettime64(struct ptp_clock_info *ptp, struct timespec64 *ts)
+ 	return ret;
+ }
+ 
+-int pfeng_ptp_settime64(struct ptp_clock_info *ptp, const struct timespec64 *ts)
++static int pfeng_ptp_settime64(struct ptp_clock_info *ptp, const struct timespec64 *ts)
+ {
+ 	struct pfeng_netif *netif = container_of(ptp, struct pfeng_netif, ptp_ops);
+ 	struct pfeng_priv *priv = netif->priv;
+@@ -169,7 +169,7 @@ int pfeng_ptp_settime64(struct ptp_clock_info *ptp, const struct timespec64 *ts)
+ 	return ret;
+ }
+ 
+-int pfeng_ptp_enable(struct ptp_clock_info __always_unused *ptp,
++static int pfeng_ptp_enable(struct ptp_clock_info __always_unused *ptp,
+ 		     struct ptp_clock_request __always_unused *request,
+ 		     int __always_unused on)
+ {
+diff --git a/sw/linux-pfeng/pfeng-slave-drv.c b/sw/linux-pfeng/pfeng-slave-drv.c
+index 4b085e6..15a55f5 100644
+--- a/sw/linux-pfeng/pfeng-slave-drv.c
++++ b/sw/linux-pfeng/pfeng-slave-drv.c
+@@ -158,7 +158,7 @@ err_cfg_alloc:
+  * Description: this function calls the main to free the net resources
+  * and releases the platform resources.
+  */
+-static int pfeng_drv_remove(struct platform_device *pdev)
++static void pfeng_drv_remove(struct platform_device *pdev)
+ {
+ 	struct device *dev = &pdev->dev;
+ 	struct pfeng_priv *priv = dev_get_drvdata(dev);
+@@ -166,7 +166,7 @@ static int pfeng_drv_remove(struct platform_device *pdev)
+ 
+ 	if (!priv) {
+ 		HM_MSG_DEV_ERR(dev, "Removal failed. No priv data.\n");
+-		return -ENOMEM;
++		return;
+ 	}
+ 
+ 	if (priv->deferred_probe_task)
+@@ -227,8 +227,6 @@ static int pfeng_drv_remove(struct platform_device *pdev)
+ 
+ 	pm_runtime_put_noidle(dev);
+ 	pm_runtime_disable(dev);
+-
+-	return 0;
+ }
+ 
+ 
+diff --git a/sw/linux-pfeng/pfeng.h b/sw/linux-pfeng/pfeng.h
+index 5b3a08c..5123ebf 100644
+--- a/sw/linux-pfeng/pfeng.h
++++ b/sw/linux-pfeng/pfeng.h
+@@ -436,10 +436,6 @@ int pfeng_hif_chnl_set_coalesce(struct pfeng_hif_chnl *chnl, struct clk *clk_sys
+ void pfeng_ihc_tx_work_handler(struct work_struct *work);
+ void pfeng_ihc_rx_work_handler(struct work_struct *work);
+ #endif /* PFE_CFG_MULTI_INSTANCE_SUPPORT */
+-#ifdef PFE_CFG_PFE_SLAVE
+-int pfeng_hif_slave_suspend(struct pfeng_priv *priv);
+-int pfeng_hif_slave_resume(struct pfeng_priv *priv);
+-#endif /* PFE_CFG_PFE_SLAVE */
+ 
+ /* bman */
+ int pfeng_bman_pool_create(struct pfeng_hif_chnl *chnl);
+@@ -497,6 +493,6 @@ void pfeng_hwts_get_tx_ts(struct pfeng_netif *netif, pfe_ct_ets_report_t *etsr);
+ int pfeng_hwts_store_tx_ref(struct pfeng_netif *netif, struct sk_buff *skb);
+ int pfeng_hwts_ioctl_set(struct pfeng_netif *netif, struct ifreq *rq);
+ int pfeng_hwts_ioctl_get(struct pfeng_netif *netif, struct ifreq *rq);
+-int pfeng_hwts_ethtool(struct pfeng_netif *netif, struct ethtool_ts_info *info);
++int pfeng_hwts_ethtool(struct pfeng_netif *netif, struct kernel_ethtool_ts_info *info);
+ 
+ #endif
+diff --git a/sw/oal/src/oal_mm_linux.c b/sw/oal/src/oal_mm_linux.c
+index 1b66f52..28edd90 100644
+--- a/sw/oal/src/oal_mm_linux.c
++++ b/sw/oal/src/oal_mm_linux.c
+@@ -670,7 +670,7 @@ static int pfeng_reserved_dma_shared_pool_region_init(struct device *dev, int *r
+ 
+ #endif /* PFE_CFG_PFE_MASTER */
+ 
+-int __oal_mm_wakeup_reinit(void)
++static int __oal_mm_wakeup_reinit(void)
+ {
+ 	struct pfe_reserved_mem *res_mem = NULL;
+ 
+diff --git a/sw/oal/src/oal_time_linux.c b/sw/oal/src/oal_time_linux.c
+index 490a53d..578bcb1 100644
+--- a/sw/oal/src/oal_time_linux.c
++++ b/sw/oal/src/oal_time_linux.c
+@@ -18,6 +18,7 @@
+ #include <linux/delay.h>
+ #include <linux/ktime.h>
+ #include "pfe_cfg.h"
++#include "oal_time.h"
+ 
+ /*
+    See in kernel documentation "Documentation/timers/timers-howto.txt"
+diff --git a/sw/pfe_platform/src/pfe_phy_if_slave.c b/sw/pfe_platform/src/pfe_phy_if_slave.c
+index e4df0ff..ecb5a19 100644
+--- a/sw/pfe_platform/src/pfe_phy_if_slave.c
++++ b/sw/pfe_platform/src/pfe_phy_if_slave.c
+@@ -579,7 +579,7 @@ errno_t pfe_phy_if_enable(pfe_phy_if_t *iface)
+ 	return ret;
+ }
+ 
+-errno_t pfe_phy_if_disable_nolock(pfe_phy_if_t *iface)
++static errno_t pfe_phy_if_disable_nolock(pfe_phy_if_t *iface)
+ {
+ 	errno_t ret;
+ 	pfe_platform_rpc_pfe_phy_if_disable_arg_t arg;
+@@ -1699,4 +1699,4 @@ uint32_t pfe_phy_if_get_stat_value(pfe_phy_if_t *iface, uint32_t stat_id)
+ 	}
+ 
+ 	return stat_val;
+-}
+\ No newline at end of file
++}
+-- 
+2.34.1
+

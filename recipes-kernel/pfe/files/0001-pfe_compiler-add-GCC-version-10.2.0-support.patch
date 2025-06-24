@@ -10,6 +10,8 @@ Add GCC version 10.2.0 support, to fix below compile error:
 |   117 |  #error Please specify your compiler behavior by defining PFE_COMPILER_BITFIELD_BEHAVIOR.
 |       |   ^~~~~
 
+Upstream-Status: Pending
+
 Signed-off-by: Xulin Sun <xulin.sun@windriver.com>
 ---
  sw/pfe_platform/public/pfe_compiler.h | 6 ++++++

@@ -10,15 +10,14 @@ DEPENDS = "openssl libp11"
 RDEPENDS:${PN} = "opensc pcsc-lite ccid"
 
 URL ?= "git://github.com/nxp-auto-linux/pkcs11-hse.git;protocol=https"
-BRANCH ?= "release/bsp43.0"
+BRANCH ?= "release/bsp44.0"
 SRC_URI = "${URL};branch=${BRANCH}"
 
-SRCREV = "65fae37f96cae1c04330148fa4aeb3c11e11ee16"
+SRCREV = "0542cc5a248cc2d35af339c38270e2059a927b31"
 SRC_URI[sha256sum] = "b529fcbbb8f4347310d433162b81291da5955f9916d5c6ad5f4dc316ef6aef14"
 
 SRC_URI += " \
     file://0001-pkcs11-hse-Makefile-using-internal-compile-variables.patch \
-    file://0001-hse-pkcs-secboot-replace-memcpy-with-specific-hse_me.patch \
     file://0001-hse-pkcs-secboot-add-code-to-support-m7-secure-boot.patch \
     file://0001-examples-hse-secboot-update-usage-messages.patch \
 "

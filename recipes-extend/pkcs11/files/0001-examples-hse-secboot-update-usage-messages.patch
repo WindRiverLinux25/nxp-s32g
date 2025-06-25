@@ -1,4 +1,4 @@
-From 2c578f0b6870b2a409d593b0168bc88cf8803912 Mon Sep 17 00:00:00 2001
+From 0d1e6399f067b29ad91745c27647764e5c18037a Mon Sep 17 00:00:00 2001
 From: Zhantao Tang <zhantao.tang@windriver.com>
 Date: Sat, 15 Mar 2025 03:25:05 +0000
 Subject: [PATCH] examples: hse-secboot: update usage messages
@@ -13,10 +13,10 @@ Signed-off-by: Zhantao Tang <zhantao.tang@windriver.com>
  1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/examples/hse-secboot/hse-secboot.c b/examples/hse-secboot/hse-secboot.c
-index 45a02e4..ddfb5d2 100644
+index fe15601..6926c83 100644
 --- a/examples/hse-secboot/hse-secboot.c
 +++ b/examples/hse-secboot/hse-secboot.c
-@@ -1249,8 +1249,8 @@ void usage(char *progname)
+@@ -2026,8 +2026,8 @@ void usage(char *progname)
  	printf("\nformat HSE key catalogs or set up HSE-based advanced secure boot\n\n");
  	printf("Example: hse-secboot -s -d /dev/mmcblk0 --bl2_key /etc/keys/secboot/bl2_rsa2048_public.pem ");
  	printf("--bl31_key -:0x010700 --bl33_key -:0x010700 ");
@@ -27,15 +27,15 @@ index 45a02e4..ddfb5d2 100644
  	printf("\n");
  	printf("Usage:\n");
  	printf("\n");
-@@ -1270,7 +1270,7 @@ void usage(char *progname)
+@@ -2049,7 +2049,7 @@ void usage(char *progname)
  	printf("\t\t\t    sd - SD card boot (default)\n");
  	printf("\t\t\t  qspi - QSPI Flash boot\n");
  	printf("\t\t\t   mmc - MMC or eMMC boot\n");
 -	printf("\t-d:\tspecify full path to SD/MMC/MTD device (e.g. /dev/sdb or /dev/mtd0)\n");
 +	printf("\t-d:\tspecify full path to SD/MMC/MTD device (e.g. /dev/mmcblk0 or /dev/mtd0)\n");
- 	printf("\t--bl2_sign: specify full path to the binary signature file of BL2 (required)\n");
- 	printf("\t--bl2_bin: specify full path to the BL2 binary file (required)\n");
- 	printf("\t--bl2_key: specify full path to PEM format key file for BL2 and HSE key slot (required)\n");
+ 	printf("\t-e:\tuse ECC keys and ECDSA signature for BL2 and BL3X images\n");
+ 	printf("\t--rpmb_key: specify full path to symmetric key file for Rollback Protection and HSE key slot,\n");
+ 	printf("\t            if this option is present, the HSE Monotonic Counter Table will be generated\n");
 -- 
-2.34.1
+2.43.0
 

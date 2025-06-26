@@ -2,10 +2,6 @@ FILES:${PN} = "/boot ${datadir}"
 
 include atf-hse-secboot.inc
 
-SRC_URI:append = " \
-    file://0001-secboot-move-bl2-base-address-to-0x34100000-when-sec.patch \
-"
-
 inherit uboot-config
 
 # There are 256 bytes space following IVT, it is able to be used save BSP specific flags
@@ -69,6 +65,7 @@ do_compile:append() {
                       BL31_KEY=${SECBOOT_SIGN_KEYDIR}/${RSA_PRIV_BL31} \
                       BL32_KEY=${SECBOOT_SIGN_KEYDIR}/${RSA_PRIV_BL32} \
                       BL33_KEY=${SECBOOT_SIGN_KEYDIR}/${RSA_PRIV_BL33} \
+                      DDRFW_KEY=${SECBOOT_SIGN_KEYDIR}/${RSA_PRIV_DDRFW} \
                      "
 
             i=$(expr $i + 1);
@@ -81,7 +78,7 @@ do_compile:append() {
                        -F -k "${UBOOT_SIGN_KEYDIR}" \
                        -K "${B}/${type}/${plat}/${BUILD_TYPE}/fdts/${dtb}" \
                        -r ${ATF_BINARIES}/fitImage-linux
-                    oe_runmake -C ${S} DTB_FILE_NAME=${dtb} BUILD_BASE=$build_base PLAT=${plat} BL33=$bl33_bin BL33DIR=$bl33_dir MKIMAGE_CFG=$uboot_cfg MKIMAGE=mkimage $optee_arg $hse_fw_dir $fip_location $bl_keys all
+                    oe_runmake -C ${S} DTB_FILE_NAME=${dtb} BUILD_BASE=$build_base PLAT=${plat} BL33=$bl33_bin BL33DIR=$bl33_dir MKIMAGE_CFG=$uboot_cfg MKIMAGE=mkimage $optee_arg $hse_fw_dir $fip_location $bl_keys DDR_FW_BIN_PATH=${DDR_FW_PATH} all
                 fi
             done
             unset j

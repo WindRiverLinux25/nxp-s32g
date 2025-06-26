@@ -33,10 +33,12 @@ RSA_PRIV_BL2 ??= ""
 RSA_PRIV_BL31 ??= ""
 RSA_PRIV_BL32 ??= ""
 RSA_PRIV_BL33 ??= ""
+RSA_PRIV_DDRFW ??= ""
 BL2_HANDLE ??= ""
 BL31_HANDLE ??= ""
 BL32_HANDLE ??= ""
 BL33_HANDLE ??= ""
+DDRFW_HANDLE ??= ""
 
 DDR_FW_PATH ?= ""
 
@@ -49,6 +51,7 @@ SECBOOT_ARGS = " \
                  BL31_HSE_KEYHANDLE=${BL31_HANDLE} \
                  BL32_HSE_KEYHANDLE=${BL32_HANDLE} \
                  BL33_HSE_KEYHANDLE=${BL33_HANDLE} \
+                 DDRFW_HSE_KEYHANDLE=${DDRFW_HANDLE} \
                  MBEDTLS_DIR=${RECIPE_SYSROOT}/usr/share/mbedtls-source \
                  "
 
@@ -154,6 +157,7 @@ do_compile() {
                           BL31_KEY=${SECBOOT_SIGN_KEYDIR}/${RSA_PRIV_BL31} \
                           BL32_KEY=${SECBOOT_SIGN_KEYDIR}/${RSA_PRIV_BL32} \
                           BL33_KEY=${SECBOOT_SIGN_KEYDIR}/${RSA_PRIV_BL33} \
+                          DDRFW_KEY=${SECBOOT_SIGN_KEYDIR}/${RSA_PRIV_DDRFW} \
                          "
             fi
 

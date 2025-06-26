@@ -16,9 +16,11 @@ RSA_PUB_KEYS ?= "\
                 ${SECBOOT_PUBKEYS_DIR}/${RSA_PUB_BL2} \
                 ${SECBOOT_PUBKEYS_DIR}/${RSA_PUB_BL31} \
                 ${SECBOOT_PUBKEYS_DIR}/${RSA_PUB_BL33} \
+                ${SECBOOT_PUBKEYS_DIR}/${RSA_PUB_DDRFW} \
                 ${SECBOOT_PUBKEYS_DIR}/${RSA_PUB_BL2_DER} \
                 ${SECBOOT_PUBKEYS_DIR}/${RSA_PUB_BL31_DER} \
                 ${SECBOOT_PUBKEYS_DIR}/${RSA_PUB_BL33_DER} \
+                ${SECBOOT_PUBKEYS_DIR}/${RSA_PUB_DDRFW_DER} \
                "
 
 SYSROOT_DIRS:append  = " \
@@ -38,6 +40,8 @@ do_generate_bl_public_keys () {
     fi
     openssl rsa -in ${SECBOOT_SIGN_KEYDIR}/${RSA_PRIV_BL33} -pubout -out ${SECBOOT_PUBKEYS_DIR}/${RSA_PUB_BL33}
     openssl rsa -in ${SECBOOT_SIGN_KEYDIR}/${RSA_PRIV_BL33} -outform DER -pubout -out ${SECBOOT_PUBKEYS_DIR}/${RSA_PUB_BL33_DER}
+    openssl rsa -in ${SECBOOT_SIGN_KEYDIR}/${RSA_PRIV_DDRFW} -pubout -out ${SECBOOT_PUBKEYS_DIR}/${RSA_PUB_DDRFW}
+    openssl rsa -in ${SECBOOT_SIGN_KEYDIR}/${RSA_PRIV_DDRFW} -outform DER -pubout -out ${SECBOOT_PUBKEYS_DIR}/${RSA_PUB_DDRFW_DER}
     if [ ${M7_SEC} -eq 1 ]; then
         openssl rsa -in ${SECBOOT_SIGN_KEYDIR}/${RSA_PRIV_M7} -pubout -out ${SECBOOT_PUBKEYS_DIR}/${RSA_PUB_M7}
         openssl rsa -in ${SECBOOT_SIGN_KEYDIR}/${RSA_PRIV_M7} -outform DER -pubout -out ${SECBOOT_PUBKEYS_DIR}/${RSA_PUB_M7_DER}
@@ -111,8 +115,10 @@ FILES:${PN} += "${SECBOOT_KEYS_INSTALL_PATH}${RSA_PUB_BL31}"
 FILES:${PN} += "${@ "${SECBOOT_KEYS_INSTALL_PATH}${RSA_PUB_BL32}" if "${OP_TEE}" == '1' else ''}"
 FILES:${PN} += "${@ "${SECBOOT_KEYS_INSTALL_PATH}${RSA_PUB_M7}" if "${M7_SEC}" == '1' else ''}"
 FILES:${PN} += "${SECBOOT_KEYS_INSTALL_PATH}${RSA_PUB_BL33}"
+FILES:${PN} += "${SECBOOT_KEYS_INSTALL_PATH}${RSA_PUB_DDRFW}"
 FILES:${PN} += "${SECBOOT_KEYS_INSTALL_PATH}${RSA_PUB_BL2_DER}"
 FILES:${PN} += "${SECBOOT_KEYS_INSTALL_PATH}${RSA_PUB_BL31_DER}"
 FILES:${PN} += "${SECBOOT_KEYS_INSTALL_PATH}${RSA_PUB_BL33_DER}"
+FILES:${PN} += "${SECBOOT_KEYS_INSTALL_PATH}${RSA_PUB_DDRFW_DER}"
 FILES:${PN} += "${@ "${SECBOOT_KEYS_INSTALL_PATH}${RSA_PUB_BL32_DER}" if "${OP_TEE}" == '1' else ''}"
 FILES:${PN} += "${@ "${SECBOOT_KEYS_INSTALL_PATH}${RSA_PUB_M7_DER}" if "${M7_SEC}" == '1' else ''}"

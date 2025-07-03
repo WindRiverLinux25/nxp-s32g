@@ -1,4 +1,3 @@
-require optee-os-nxp.inc
 
 do_compile:nxp-s32g() {
     for plat in ${OPTEE_PLAT_FLAVORS}; do

@@ -1,2 +1,2 @@
-COMPATIBLE_MACHINE:nxp-s32g = "nxp-s32g"
+COMPATIBLE_MACHINE:forcevariable = "nxp-s32g"
 OPTEEMACHINE:nxp-s32g ?= "s32"

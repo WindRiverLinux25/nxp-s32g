@@ -1207,3 +1207,22 @@ For example, users can use the following commands in u-boot stage to delete
 the node:
     setenv fdt_fixups "fdt addr ${fdt_addr}; fdt rm /thermal-zones/a53_cores/trips/cpu-crit"
 then the board can work normally.
+
+6.12 DDR firmware
+-----------------
+
+From BSP44, the DDR initialization procedure for S32G reference boards has
+been updated. Certain configuration settings used during DDR initialization
+have been moved into a dedicated binary, and the default binary name from NXP
+should be like:
+    ddr_fw_ecc_off.bin or ddr_fw_ecc_on.bin
+which are from NXP S32G download site, users should get the related permission
+from NXP, to get them. And the ddr firmware is now stored in a specific slot
+within the FIP image. This change affects the boot flow for S32G reference
+boards, as the BL2 stage must now load additional images.
+
+Given the above changes, users should add the following param in their project's
+conf/local.conf:
+    DDR_FW_PATH = "<firmware-path>/<ddr-firmware-name>"
+then build their own project, otherwise, if invalid firmware is used, the board
+boot should fail.

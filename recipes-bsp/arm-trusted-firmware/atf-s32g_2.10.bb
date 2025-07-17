@@ -40,7 +40,7 @@ BL32_HANDLE ??= ""
 BL33_HANDLE ??= ""
 DDRFW_HANDLE ??= ""
 
-DDR_FW_PATH ?= ""
+DDR_FW_PATH ?= "/dev/null"
 
 HSE_ARGS = " \
               HSE_SUPPORT=1 \
@@ -106,6 +106,14 @@ do_compile:prepend() {
                 bbfatal_log "There is a difference in the SCMI header content between TF-A and the Linux repository (${hdr} vs ${lhdr})."
             fi
         done
+    fi
+
+    if [ ! -e "${DDR_FW_PATH}" ]; then
+        bbfatal_log "Please check and set a valid DDR_FW_PATH value!"
+    fi
+
+    if [ "${DDR_FW_PATH}" -ef "/dev/null" ]; then
+        bbwarn "Please set a valid DDR_FW_PATH value, or else, the output WIC image boot should fail!"
     fi
 }
 

@@ -11,7 +11,7 @@ RDEPENDS:${PN} += "${@bb.utils.contains('MACHINE_FEATURES', 'optee-spmc-test', \
 
 LIC_FILES_CHKSUM:nxp-s32g = "file://LICENSE.md;md5=daa2bcccc666345ab8940aab1315a4fa"
 
-SRCREV:nxp-s32g = "79e49f95474d05a028f58a75c6c643f88e9b9295"
+SRCREV = "79e49f95474d05a028f58a75c6c643f88e9b9295"
 
 FILESEXTRAPATHS:prepend := "${LAYER_PATH_meta-arm}/recipes-security/optee/${PN}:"
 URL:nxp-s32g ?= "git://github.com/nxp-auto-linux/optee_test.git;protocol=https"

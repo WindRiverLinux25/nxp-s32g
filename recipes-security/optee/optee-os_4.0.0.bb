@@ -5,7 +5,7 @@ DEPENDS += "dtc-native"
 
 FILESEXTRAPATHS:prepend := "${LAYER_PATH_meta-arm}/recipes-security/optee/${PN}:${THISDIR}/${PN}:"
 
-SRCREV:nxp-s32g = "5bc04d55cc67a75824cad7a8ee4b29090ee11187"
+SRCREV = "5bc04d55cc67a75824cad7a8ee4b29090ee11187"
 
 URL:nxp-s32g ?= "git://github.com/nxp-auto-linux/optee_os;protocol=https"
 BRANCH:nxp-s32g ?= "release/bsp44.0-4.0"

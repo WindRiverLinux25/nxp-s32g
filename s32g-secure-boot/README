@@ -298,58 +298,7 @@ Offset      Size(bytes)         Name
 3.3.3 Target Configuration
 --------------------------
 
-3.3.3.1 Enable First Stage Secure Boot With U-BOOT Command
-----------------------------------------------------------
-A below U-Boot command is provided to enable the target board enter secure boot mode.
-
-SD boot mode:
-	=> hse_secboot_enable sd
-EMMC boot mode:
-	=> hse_secboot_enable emmc
-QSPI boot mode:
-	=> hse_secboot_enable qspi
-
-The steps taken by the command are the following:
-1. Check if HSE FW has been initialized;
-2. Read the IVT from the boot media;
-3. If no SYS_IMG exists:
-	(a) Configure the HSE NVM and RAM key catalogs;
-4. Import the RSA public key into the NVM key catalog;
-5. Configure and install the Core Reset entry;
-6. Configure and install the Secure Memory Region entry;
-7. Generate the signed SYS_IMG;
-8. Write the SYS_IMG back onto the boot media;
-9. Set appropriate pointers in the IVT;
-10. Set the BOOT_SEQ bit;
-11. Write the IVT back onto the boot media;
-
-The required BL2 binary and public RSA keys are configured by the following
-environment variables:
-    bl2_bin
-    bl2_pubkey
-    bl31_pubkey
-    bl33_pubkey
-users could set these variables to customize the binary or keys for their
-own usage. For BL2 binary and its signature file, they are put in the
-boot/secboot directory of SD Card root partition. For public keys, their
-location is the /etc/keys/secboot directory of SD Card root partition.
-
-After the command is finished, simply reset the board to boot in secure mode.
-To verify whether the board has booted in secure mode, check the BOOT_SEQ bit in the IVT at offset 0x28
-with below commands
-
-SD/EMMC boot mode:
-	=> mmc read ${loadaddr} 8 1
-QSPI boot mode:
-	=> sf read ${loadaddr} 0 0x100
-
-	=> md.b ${loadaddr} 30
-	0 2 4 6 8 A C E
-	800000020 d101 0060 0000 0000 0000 0000 0000 0000
-	800000030 0000 0000 0000 0000 0014 0000 0000 0000
-	800000040 00e6 0500 0000 0000 0900 0000 0000 0000
-
-3.3.3.2 Enable First Stage Secure Boot With User Space Application
+3.3.3.1 Enable First Stage Secure Boot With User Space Application
 ------------------------------------------------------------------
 Based on NXP SDK BSP35, there is a user space application that is able to be used to enable
 the first stage secure boot feature. Detailed steps as below:
@@ -375,10 +324,19 @@ QSPI boot mode:
 	4. Power on board, now secure boot had been enabled.
 	   If bootloader image is verified successfully by HSE firmware, board will enter u-boot normally.
 
-Note:
-The above 3 solutions of enabling secure boot exclude from each other, user should only use one of them to
-enable secure boot feature. If user enable secure boot with one solution and then run another one again,
-this may cause uncertain issues to secure boot feature. So please aovid enabling secure boot repeatedly.
+To verify whether the board has booted in secure mode, check the BOOT_SEQ bit in the IVT at offset 0x28
+with below commands
+
+SD/EMMC boot mode:
+	=> mmc read ${loadaddr} 8 1
+QSPI boot mode:
+	=> sf read ${loadaddr} 0 0x100
+
+	=> md.b ${loadaddr} 30
+	0 2 4 6 8 A C E
+	800000020 d101 0060 0000 0000 0000 0000 0000 0000
+	800000030 0000 0000 0000 0000 0014 0000 0000 0000
+	800000040 00e6 0500 0000 0000 0900 0000 0000 0000
 
 3.4 Secure Boot Second Stage
 ----------------------------

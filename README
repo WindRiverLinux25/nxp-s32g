@@ -758,10 +758,12 @@ concept, implemented by the linux kernel and the ATF, and underlaid by the
 S32G SoC’s Standby state. With ATF enabled, users can verify STR using the
 following command after the board boot up:
 
-	rtcwake -d rtc0 -m mem -s 5
+	rtcwake -d <rtc-device> -m mem -s 5
 
 this command will excute STR and try to wakeup the system with RTC after
-10 seconds. If succeed, the output messages should like the following:
+5 seconds, and the <rtc-device> is the device registered by s32cc-rtc.
+For example, if s32cc-rtc is identified as rtc0 device, then the command
+and its output messages should like the following, if STR succeed:
 
 	root@nxp-s32g:~# rtcwake -d rtc0 -m mem -s 5
 	rtcwake: assuming RTC uses UTC ...

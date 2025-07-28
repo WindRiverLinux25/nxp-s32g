@@ -3,7 +3,7 @@
 1. About this document
 ======================
 This document provides detail description about how to enable secure
-boot on S32G2-EVB, S32G274A-RDB2 and S32G399A-RDB3 boards.
+boot on S32G399A-RDB3 board.
 It includes the implementation principles of secure boot, implementation
 example step by step and so on.
 
@@ -40,21 +40,12 @@ To use secure boot feature, assume that you are:
 
 Hardware Preparations:
  - A host machine installed with wrlinux product.
- - S32G2-EVB, S32G274A-RDB2 and S32G399A-RDB3 development boards.
+ - S32G399A-RDB3 development boards.
  - An SD Card.
 
 Jumper/Switch configuration for SD boot:
 
-S32G2-EVB:
-J50: Connect pin1 and pin2
-SW6: bit7 ON
-SW7: All bits OFF
-SW8: All bits OFF
-SW9: All bits OFF
-SW14: bit1 ON, bit2 OFF
-SW15: All bits OFF
-
-S32G274A-RDB2/S32G399A-RDB3:
+S32G399A-RDB3:
 SW3: ON
 SW4: bit7 ON
 SW5: All bits OFF
@@ -65,16 +56,7 @@ SW10: bit1 ON, bit2 OFF
 
 Jumper/Switch configuration for EMMC boot:
 
-S32G2-EVB:
-J50: Connect pin2 and pin3
-SW6: bit6 bit7 ON
-SW7: All bits OFF
-SW8: All bits OFF
-SW9: All bits OFF
-SW14: bit1 ON, bit2 OFF
-SW15: All bits OFF
-
-S32G274A-RDB2/S32G399A-RDB3:
+S32G399A-RDB3:
 SW3: OFF
 SW4: bit6 bit7 ON
 SW5: All bits OFF
@@ -85,16 +67,7 @@ SW10: bit1 ON, bit2 OFF
 
 Jumper/Switch configuration for QSPI boot:
 
-S32G2-EVB:
-J50: Connect pin1 and pin2
-SW6: All bits OFF
-SW7: All bits OFF
-SW8: All bits OFF
-SW9: All bits OFF
-SW14: bit1 ON, bit2 OFF
-SW15: All bits OFF
-
-S32G274A-RDB2/S32G399A-RDB3:
+S32G399A-RDB3:
 SW3: OFF
 SW4: All bits OFF
 SW5: All bits OFF
@@ -105,7 +78,7 @@ SW10: bit1 ON, bit2 OFF
 
 Software Preparations:
  - Wrlinux product with nxp-s32g BSP
- - HSE firmware for S32G274A/399A SoC
+ - HSE firmware for 399A SoC
 
 3. Secure Boot Process
 ======================
@@ -128,11 +101,8 @@ by the preceding step. Thus, the secure boot flow is the following:
 Apply for assess right with NXP and then download HSE firmware from below link
 https://nxp.flexnetoperations.com/control/frse/product?child_plneID=820667
 
-S32G2 HSE FW Standard 0.1.0.14 is for S32G274A plarform
-The HSE firmware file is rev2.0_s32g2xx_hse_fw_0.1.0_1.0.14_pb240319.bin.pink
-
-HSE FW 0.2.51.0 Release is for S32G399A plarform
-The HSE firmware file is rev1.1_s32g3xx_hse_fw_0.20.0_2.51.0_pb240404.bin.pink
+HSE FW 0.2.64.0 Release is for S32G399A plarform
+The HSE firmware file is s32g3xx_hse_fw_0.20.0_2.64.0_pb250127.bin.pink
 
 3.2 Build nxp-s32g BSP With Secure Boot Feature
 -----------------------------------------------
@@ -308,14 +278,16 @@ the first stage secure boot feature. Detailed steps as below:
 		# umount /boot
 SD(EMMC) boot mode:
 		# hse-secboot -s -b sd(mmc) -d /dev/mmcblk0 \
-		  --bl2_key /etc/keys/secboot/bl2_rsa2048_public.pem:0x010700 \
+		  --ddrfw_key /etc/keys/secboot/ddrfw_rsa2048_public.pem:0x010700 \
+		  --bl2_key -:0x010700 \
 		  --bl31_key -:0x010700 \
 		  --bl33_key -:0x010700 \
 		  --bl2_bin /boot/secboot/<bl2-name>.bin \
 		  --bl2_sign /boot/secboot/<bl2-name>.bin.sign \
 QSPI boot mode:
 		# hse-secboot -s -b qspi -d /dev/mtd0
-		  --bl2_key /etc/keys/secboot/bl2_rsa2048_public.pem:0x010700 \
+		  --ddrfw_key /etc/keys/secboot/ddrfw_rsa2048_public.pem:0x010700 \
+		  --bl2_key -:0x010700 \
 		  --bl31_key -:0x010700 \
 		  --bl33_key -:0x010700 \
 		  --bl2_bin /boot/secboot/<qspi-bl2-name>.bin \
@@ -343,10 +315,8 @@ QSPI boot mode:
 
 3.4.1 Load fitImage
 -------------------
-There is a fitImage in boot partition, it can support below 3 boards.
+There is a fitImage in boot partition, it can support below board.
 
-S32G2-EVB
-S32G274A-RDB2
 S32G399A-RDB3
 
 Load the fitImage with below command
@@ -364,7 +334,7 @@ Run fitImage below command
 
 	=> bootm 0xc4000000#conf-<board name>.dtb
 For example:
-	=> bootm 0xc4000000#conf-s32g2xxa-evb.dtb
+	=> bootm 0xc4000000#conf-s32g399a-rdb3.dtb
 
 Note: About other boot parameters setting, please refer to README in BSP layer directory.
 	

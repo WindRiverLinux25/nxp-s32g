@@ -144,11 +144,8 @@ rootpath=/tftpboot/rootfs
 consoledev=ttyLF0
 baudrate=115200
 
-The fdt-file-name includes the following dtbs:
-	s32g2xxa-evb.dtb
-	s32g274a-rdb2.dtb
-	s32g399a-rdb3.dtb
-Please use the right one for different board.
+The fdt-file-name should be:
+	s32g399a-rdb3.dtb for RDB3
 
 Note:
 By default, in u-boot, the active port is eth0, which is occupied by GMAC.
@@ -163,8 +160,8 @@ to use pfe ports instead, where the x indicates 0, 1 or 2.
 
 Please note that there will be many references to the SDK user manual in the
 following paragraphs. Unless otherwise specified, the SDK user manual refers to:
-    S32G<x>_LinuxBSP_43.0_User_Manual.pdf
-The x represents 2 for S32G2 and 3 for S32G3.
+    S32G<x>_LinuxBSP_44.0_User_Manual.pdf
+The x represents 3 for S32G3.
 
 For S32G platforms, there are 3 boot devices as following:
     SD, eMMC, QSPI.
@@ -173,26 +170,7 @@ If users want to use these devices to boot, the DIP switches on S32G boards
 should be configured correctly. And the following are the DIP switches setting
 for these 3 boot devies:
 
-For S32G2 EVB:
-
-                eMMC            SD              QSPI
-    -------------------------------------------------------
-    J50         1 x x           x x 3           x x 3
-    -------------------------------------------------------
-    SW6         6,7 on          7 on            all off
-    -------------------------------------------------------
-    SW7
-    SW8         all off         all off         all off
-    SW9
-    -------------------------------------------------------
-    SW14        1 on, 2 off     1 on, 2 off     1 on, 2 off
-    -------------------------------------------------------
-    SW15        1,2 off         1,2 off         1,2 off
-
-    the above "x" means connected, so "1 x x" means pin1 is unused, pin2 and
-    pin3 are connected.
-
-For S32G2 RDB2/S32G3 RDB3:
+For S32G3 RDB3:
 
                 eMMC            SD              QSPI
     -------------------------------------------------------
@@ -274,9 +252,6 @@ to boot the board using QSPI atf image:
 The "Loading Environment from SPI Flash..." line indicates that the boot
 device is QSPI flash as expected.
 
-For other S32G boards, please change the QSPI atf image name and
-jumpers/DIP switches accordingly.
-
 For SD WIC images, please refer to the following Section "5. Creating
 Partitioned Images(WIC)", there are detail information about how to use
 or configure SD WIC images to boot.
@@ -315,8 +290,6 @@ To burn WIC image to SD card, user only need to execute the below command:
   # dd if=<wic-image-name> of=/dev/your_sd_dev
 
 The above wic-image-name includes:
-  wrlinux-image-std-nxp-s32g-evb.wic  for S32G274A-EVB
-  wrlinux-image-std-nxp-s32g-rdb2.wic for S32G274A-RDB2
   wrlinux-image-std-nxp-s32g-rdb3.wic for S32G399A-RDB3
 
 Please use the right one for different board.
@@ -334,8 +307,8 @@ Board can boot automatically by set the below uboot environment variables:
 
 => saveenv; run bootcmd;
 
-The above fdt-file-name includes s32g2xxa-evb.dtb, s32g274a-rdb2.dtb,
-and s32g399a-rdb3.dtb, please use the right fdt file for different board.
+The above fdt-file-name should be:
+ s32g399a-rdb3.dtb for RDB3
 
 
 NOTICE:
@@ -365,10 +338,7 @@ Detail verification commands as below:
 If can0 dumps data from can1, FLEXCAN feature works fine.
 
 Note:
-For S32G274A-EVB, can0 is the J79 on the S32G-PROCEVB-S board, can1 & can2 are the J19 & J20
-on the S32GRV-PLATEVB board.
-For S32G274A-RDB2, can0 & can1 are on the J6 on the S32G-VNP-RDB2 board and validated,
-can 2 & can3 are no external interfaces and no validation.
+For RDB3, only can0 and can1 interfaces are available.
 
 6.2 HSE
 -------
@@ -376,10 +346,9 @@ can 2 & can3 are no external interfaces and no validation.
 The NXP HSE (Hardware Security Engine) is a security subsystem aimed at running
 relevant security functions for applications with stringent confidentiality and
 authenticity requirements. This chapter describes the supported HSE features for
-the S32G274A and S32G399A boards. Detailed information can refer to "HSE Reference
-Manual".
+the S32G399A boards. Detailed information can refer to "HSE Reference Manual".
 
-HSE is a component of S32G274A/S32G399A SOCs. It must be installed with the
+HSE is a component of S32G399A SOCs. It must be installed with the
 firmware to use. HSE firmware is not shipped with SDK. It is released through
 NXP's Flexera, customers have to contact NXP to get the access to Flexera.
 
@@ -389,9 +358,8 @@ NXP's Flexera, customers have to contact NXP to get the access to Flexera.
 Before to use the HSE, HSE firmware must be installed and the key catalogs must
 be formatted.
 
-For A53 cores, the related firmwares are included in the following packages:
-    HSE_FW_S32G2XX_0_1_0_14_D2403.exe             for S32G2
-    HSE_FW_S32G3XX_0_2_51_0_D2404.exe             for S32G3
+For A53 cores, the related firmwares are included in the following package:
+    HSE_FW_S32G3XX_0.2.64.0_D2503.exe             for S32G3
 
 Users need to firstly install the above .exe files into windows system to get
 the firmwares for A53.
@@ -412,9 +380,7 @@ functionality, help to verify HSE. The steps are as following:
     variables, like the following:
 
         HSE_LOCAL_FIRMWARE_DIR = "/path/to/hse/firmware/for/s32g/boards"
-        HSE_FW_VERSION_S32G2 = "firmware-version-for-s32g2"
         HSE_FW_VERSION_S32G3 = "firmware-version-for-s32g3"
-        HSE_FW_NAME_S32G2 = "firmware-name-for-s32g2"
         HSE_FW_NAME_S32G3 = "firmware-name-for-s32g3"
 
     and
@@ -423,41 +389,34 @@ functionality, help to verify HSE. The steps are as following:
     in the project <build-dir>/conf/local.conf.
 
     In detail, The HSE_LOCAL_FIRMWARE_DIR is the top directory for HSE
-    firmwares location, the HSE_FW_<VERSION, NAME>_S32G2, and
-    HSE_FW_<VERSION, NAME>_S32G3 are firmware version and real firmware
-    name for S32G2 and S32G3 respectively.
+    firmwares location, and HSE_FW_<VERSION, NAME>_S32G3 is firmware version
+    and real firmware name for S32G3 respectively.
 
-    And in acctually, the HSE_FW_VERSION_<S32G2, S32G3> are subdirectories of
+    And in acctually, the HSE_FW_VERSION_S32G3 are subdirectories of
     HSE_LOCAL_FIRMWARE_DIR. And in this subdirectory, there should have
     firmware interface directory and firmware binary. Because the interface
     directory includes header files, which are needed when compiling pkcs11-hse
     demos, and they are matched with the firmware binary with same version,
-    so they should be under the HSE_FW_VERSION_<S32G2, S32G3> subdirectoy
+    so they should be under the HSE_FW_VERSION_S32G3 subdirectoy
     together. Users can get the interface directory and firmware binary from
     HSE_FW_S32Gx_xxx.exe.
 
     By setting all the above HSE related variables, users can choose different
-    HSE firmware versions to use. The current default version for S32G2 is
-    "0.1.0.5" and for S32G3 is "0.2.22.0".
+    HSE firmware versions to use. The current default version for S32G3 is "0.2.64.0".
 
     Take the following HSE firmware directory layout as example:
 
         xxx/firmwares/hse
-        ├── 0.1.0.14
-        │   ├── interface
-        │   └── rev2.0_s32g2xx_xxx_1.0.14_xxx.bin.pink
-        └── 0.2.51.0
+        └── 0.2.64.0
             ├── interface
-            └── rev1.1_s32g3xx_xxx_2.51.0_xxx.bin.pink
+            └── rev1.1_s32g3xx_xxx_2.64.0_xxx.bin.pink
 
     As shown above, the "interface" and firmware binary *.bin.pink file are
     put together under firmware version subdirectory. And the HSE variables
     should be:
         HSE_LOCAL_FIRMWARE_DIR = "xxx/firmwares/hse"
-        HSE_FW_VERSION_S32G2 = "0.1.0.14"
-        HSE_FW_VERSION_S32G3 = "0.2.51.0"
-        HSE_FW_NAME_S32G2 = "rev2.0_s32g2xx_xxx_1.0.14_xxx.bin.pink"
-        HSE_FW_NAME_S32G3 = "rev1.1_s32g3xx_xxx_2.51.0_xxx.bin.pink"
+        HSE_FW_VERSION_S32G3 = "0.2.64.0"
+        HSE_FW_NAME_S32G3 = "rev1.1_s32g3xx_xxx_2.64.0_xxx.bin.pink"
         IMAGE_INSTALL += "pkcs11-hse pkcs11-hse-examples opensc"
 
     in project conf/local.conf.
@@ -519,10 +478,10 @@ functionality, help to verify HSE. The steps are as following:
 NOTICE:
 
     Please make sure that the interface directory and firmware binary file are
-    in same version and be put together under HSE_FW_VERSION_<S32G2, S32G3>
+    in same version and be put together under HSE_FW_VERSION_ S32G3
     subdirectory, or else, there may be unexpected issues in build or runtime.
 
-    The linux HSE & PKCS#11 demo supports all S32G274A and S32G399A boards now.
+    The linux HSE & PKCS#11 demo supports S32G399A boards now.
 
     Besides, there are other HSE demos, like hse-encrypt, hse-sysimg,
     pkcs-key-provision, hse-secboot, pkcs-cipher, pkcs-msg-digest, pkcs-sig,
@@ -536,9 +495,9 @@ The NXP PFE (Packet Forwarding Engine) offloads the processing of Ethernet packe
 from the host cores, yielding higher performance and lower power than pure software
 processing can achieve.
 
-PFE is a component of S32G274A and S32G399A SOCs. It must be installed with the
-firmware to use. PFE firmware is not shipped with SDK, customers have to contact
-NXP to get permission and download the PFE firmware.
+PFE is a component of S32G399A SOCs. It must be installed with the firmware to
+use. PFE firmware is not shipped with SDK, customers have to contact NXP to
+get permission and download the PFE firmware.
 
 6.3.1 PFE firmware
 ------------------
@@ -550,7 +509,7 @@ The default firmware names:
     s32g_pfe_util.fw
 
 The latest verified firmware version:
-    1.10.0
+    1.11.0
 
 For more detail info about the firmware, please refer to the document:
     PFE_Firmware_S32G_UserManual.pdf
@@ -588,46 +547,27 @@ port. Please refer to the document "S32G Linux PFE Driver User’s Manual" for
 more information.
 
 About the detailed pfe port map information, users can refer to the chapter
-"Ethernet Hardware Support on S32Gx" of the SDK user manual for S32G2 and
-S32G3 platforms.
+"Ethernet Hardware Support on S32G3" of the SDK user manual.
 
 Note:
 
-1. For S32G274A-RDB2 and S32G399A-RDB3 boards, if using NFS to verify the PFE
-feature, users should use GMAC interface in u-boot, and please refer to above
-chapter "4.1 NFS Root File System" to check related settings.
+1. For S32G399A-RDB3 board, if using NFS to verify the PFE feature, users
+should use GMAC interface in u-boot, and please refer to above chapter
+"4.1 NFS Root File System" to check related settings.
 
-2. For S32G274A-EVB boards, the connection over the SJA1105
-automotive switch requires firmware to be preloaded to the switch on every
-reboot:
-	=> sja probe 5:0
-	=> sja speed -,-,-,1G,1G 5:0
-
-3. Same as NXP SDK, the ports connected with "SJA1105Q" or "SJA1110A" are not
-stable, so they maybe don't work sometimes.
+2. Same as NXP SDK, the ports connected with "SJA1110A" are not stable,
+so they maybe don't work sometimes.
 
 6.3.3 Known issue
 -----------------
 
-1. On S32G274A-EVB boards, there have an known issue that the pfe1
-phy can't work. Because the NXP SDK changed the pfe1 to sgmii mode, then pfe1
-will use an AQR107 phy, but when the pfe1 up to work, the RX count of pfe1 is
-allways 0, so the pfe1 port can not get any packets from network. And this
-issue can be reproduced on SDK pre-built image.
-
-We have submit the issue to NXP to track the progress, and the ticket url
-is:
-  https://community.nxp.com/t5/Wind-River-S32G-Support/PFE-driver-update-in-BSP33-RC8/m-p/1488518/highlight/false#M182
-
-This issue will be fixed later.
-
-2. When pfe feature is built with multi-instance mode, the suspend/resume
+1. When pfe feature is built with multi-instance mode, the suspend/resume
 functionality will be affected and can not work normally, because the
 suspend/resume support for multi-instance is not ready now, same as SDK,
 so users should note that please do not run suspend/resume operations if
 pfe is built with multi-instance mode.
 
-3. Please note that, when pfe master and slave drivers are both running
+2. Please note that, when pfe master and slave drivers are both running
 on A53 Linux cores, the slave driver should be removed before master driver,
 when using reboot command to reset the board. Or else, the system may panic.
 
@@ -648,7 +588,7 @@ Protocols. It is a self-contained module, separate from the application
 cores that would run applications (host cores). For now, LLCE CAN has
 been supported, LIN and Flexray are not, same as SDK.
 
-LLCE is a component of S32G274A and S32G399A SOCs. It must be installed with
+LLCE is a component of S32G399A SOCs. It must be installed with
 the firmwares to use. LLCE firmwares are not shipped with SDK. It is released
 through NXP's Flexera, customers have to contact NXP to get the access to
 Flexera.
@@ -682,7 +622,6 @@ If users want to verify LLCE CAN feature, please add the following lines in
 
 	CUSTOMER_RECIPES:wr-nxp-s32g += "llce"
 	IMAGE_INSTALL:append:nxp-s32g = " llce"
-	LLCE_LOCAL_FIRMWARE_DIR = "<path-to-llce-firmwares-for-s32g2-boards>"
 	LLCE_LOCAL_FIRMWARE_DIR_S32G3 = "<path-to-llce-firmwares-for-s32g3-boards>"
 
 	the variable LLCE_LOCAL_FIRMWARE_DIR indecates the firmwares(dte.bin,
@@ -744,10 +683,6 @@ and
 	"Power Management"
 
 in SDK user manual.
-
-NOTICE:
-    For hardware reasons, the power management features are only supported
-    on S32G274A RDB REV B2 or newer boards.
 
 
 6.5.1 STR verify steps
@@ -921,7 +856,6 @@ and etc., which can be found in related packages downloaded from flexra.
 And if the IPCF application on M7 side build successfully following the
 related documents, then users can find the binary files:
 
-    IPCF_Example_S32G274A_M7_0.bin
     IPCF_Example_S32G399A_M7_0.bin
 
 from related S32DS IPCF example projects.
@@ -957,7 +891,6 @@ the IPCF related drivers and M7 side app binaries will be built into WIC image.
 
 NOTICE:
     The M7 side default binary names are defined by the following variables:
-    IPCF_M7_APP_BIN_NAME
     IPCF_M7_APP_BIN_NAME_S32G3
 
 respectively, users can use different binary names by modifying these
@@ -982,14 +915,10 @@ this feature:
 		b> zero-set SRAM shared memory used by both sample apps:
 			=>mw.q 0x34100000 0x0 0x40000
 		c> load IPCF binary in SRAM:
-		   for S32G2:
-			=>fatload mmc 0:2 0x80000000 <IPCF-binary-name-for-S32G2>
-		   for S32G3:
 			=>fatload mmc 0:2 0x80000000 <IPCF-binary-name-for-S32G3>
 		   then:
 			=>cp.b 0x80000000 0x34300000 0x300000
 		d> start M7 core (the argument is the address of the Interrupt Vector):
-		   for both S32G2 and S32G3:
 			=>startm7 0x34500400;
 		e> boot Linux:
 			=>boot
@@ -1079,8 +1008,7 @@ and then the m7-sample image brings up the Cortex-A53 core with atf image.
 If users want to enable m7 secure boot mode, please add below contents in local.conf file when building WRLinux project.
 
 	HSE_LOCAL_FIRMWARE_DIR = "<HSE firmware path>"
-	HSE_FW_NAME_S32G2 = "<S32G2 HSE firmware name>"
-	HSE_FW_NAME_S32G3 = "<S32G2 HSE firmware name>"
+	HSE_FW_NAME_S32G3 = "<S32G3 HSE firmware name>"
 	BB_NO_NETWORK = '0'
 	WRTEMPLATE:append = " feature/m7_boot"
 	CUSTOMER_RECIPES:wr-nxp-s32g += 'cortex-m-toolchain'
@@ -1098,8 +1026,7 @@ Cortex-A53 cores parallel.
 If users want to enable parallel secure boot mode, please add below contents in local.conf file when building WRLinux project.
 
 	HSE_LOCAL_FIRMWARE_DIR = "<HSE firmware path>"
-	HSE_FW_NAME_S32G2 = "<S32G2 HSE firmware name>"
-	HSE_FW_NAME_S32G3 = "<S32G2 HSE firmware name>"
+	HSE_FW_NAME_S32G3 = "<S32G3 HSE firmware name>"
 	BB_NO_NETWORK = '0'
 	WRTEMPLATE:append = " feature/secure-boot-parallel"
 	CUSTOMER_RECIPES:wr-nxp-s32g += 'cortex-m-toolchain'
@@ -1155,13 +1082,13 @@ Please add the following to your setup line:
 As the rootfs is read only when dm-verity is enabled, the pkg_postinst_ontarget mechanism
 can't be used. We must decide which specific SoC this rootfs will be used for and set the
 corresponding value to S32G_SOC_VARIANT in your conf/local.conf. So far, the supported
-values are "s32g2" and "s32g3".
-	S32G_SOC_VARIANT ?= "s32g2" or "s32g3"
+value is "s32g3".
+	S32G_SOC_VARIANT ?= "s32g3"
 
 6.10 OP-TEE
 -----------
 
-There is a template used to enable OP-TEE feature on NXP s32g2/s32g3 platforms.
+There is a template used to enable OP-TEE feature on NXP s32g3 platforms.
 
 6.10.1 Build project with OP-TEE
 --------------------------------
@@ -1175,17 +1102,7 @@ Please add below parameter into setup command line:
 After system boots up normally, run below command to verify OP-TEE feature.
 	root@nxp-s32g:~# xtest -l 15
 
-Note1: During building optee-os-tadevkit package, the trust application development kit for
-s32g2 platform is installed by default, but it should be compatible with s32g3 platform theoretically.
-In order to ensure that OP-TEE feature works fine on different platform, there is a variable
-DEFAULT_TADEVKIT_VARIANT used to install specific trust application development kit for different platform.
-
-Note2: During building optee-os package, the trust application instance for s32g2 platform is installed by
-default, but it should be compatible with s32g3 platform theoretically. In order to ensure that OP-TEE feature
-works fine on different platform, there is a variable DEFAULT_ARMTZ_VARIANT used to install specific trust application
-instance for different platform.
-
-Note3: Based on NXP SDK, although OP-TEE HSE crypto driver can work with HSE hardware to a certain extent,
+Note1: Based on NXP SDK, although OP-TEE HSE crypto driver can work with HSE hardware to a certain extent,
 it can't pass all the optee test cases.
 
 6.11 cpu thermal

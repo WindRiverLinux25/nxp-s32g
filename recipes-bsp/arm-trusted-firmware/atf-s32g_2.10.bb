@@ -21,7 +21,7 @@ SRC_URI += " \
 "
 
 PATCHTOOL = "git"
-PLATFORM = "s32g2xxaevb s32g274ardb2 s32g399ardb3 s32g3xxaevb"
+PLATFORM = "s32g399ardb3"
 BUILD_TYPE = "release"
 
 ATF_S32G_ENABLE = "1"

@@ -1145,3 +1145,16 @@ conf/local.conf:
     DDR_FW_PATH = "<firmware-path>/<ddr-firmware-name>"
 then build their own project, otherwise, if invalid firmware is used, the board
 boot should fail.
+
+
+6.13 PCIe Known issue
+---------------------
+
+As lack of AER support in PCIe driver, there will be following issue if NVMe
+SSD card plug-in:
+    s32cc-pcie 40400000.pcie: PHY error detected after Hot-Plug event
+
+Temporally, as a workaround, users can append "pci=noaer" to kernel command
+line to bypass the above issue. For more detail info, please refer to the
+following ticket:
+   https://community.nxp.com/t5/S32G/PCIe-PHY-error-when-nvme-card-plug-in-on-RDB3-with-BSP44-release/m-p/2142146#M14330

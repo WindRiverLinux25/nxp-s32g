@@ -5,6 +5,8 @@ Subject: [PATCH] m7_boot: preserve signature space for m7 boot code
 
 preserve 0x100 bytes size signature space for m7 boot code
 
+Upstream-Status: Pending
+
 Signed-off-by: Meng Li <Meng.Li@windriver.com>
 ---
  project.ld.S | 2 +-

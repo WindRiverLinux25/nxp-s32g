@@ -9,6 +9,8 @@ Content-Transfer-Encoding: 8bit
 In parallel secure boot mode, it doesn’t need to bring up A53
 core with M7 core any longer.
 
+Upstream-Status: pending
+
 Signed-off-by: Meng Li <Meng.Li@windriver.com>
 ---
  src/main.c | 1 -

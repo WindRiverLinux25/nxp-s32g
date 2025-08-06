@@ -1,0 +1,55 @@
+From 83bffbf38c551b2b095f1a2322ba348adfa3a575 Mon Sep 17 00:00:00 2001
+From: Zhantao Tang <zhantao.tang@windriver.com>
+Date: Wed, 6 Aug 2025 11:12:43 +0800
+Subject: [PATCH] atf: mbedtls: update TF_CFLAGS to fix redundant-decls error
+
+When atf is compiled in secure mode, it depends on mbedtls. Recently, mbedtls
+has been updated, and there is a commit 3ea3635d2f46 ("Move the inclusion of
+crypto_sizes.h and crypto_struct.h in crypto.h"), which modifies the
+include/psa/crypto.h of mbedtls, and this will cause the following atf
+compile error:
+  include/psa/crypto.h:122:29: error: redundant redeclaration of 'psa_key_attributes_init' [-Werror=redundant-decls]
+
+But for psa APIs, there indeed functions are declared in multiple header files,
+so remove the redundant-decls warning as error setting to fix the above issue.
+
+Upstream-Status: Pending
+
+Signed-off-by: Zhantao Tang <zhantao.tang@windriver.com>
+---
+ drivers/auth/mbedtls/mbedtls_common.mk | 4 ++++
+ drivers/auth/mbedtls/mbedtls_crypto.mk | 3 ---
+ 2 files changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/auth/mbedtls/mbedtls_common.mk b/drivers/auth/mbedtls/mbedtls_common.mk
+index 02cca3f..20a0087 100644
+--- a/drivers/auth/mbedtls/mbedtls_common.mk
++++ b/drivers/auth/mbedtls/mbedtls_common.mk
+@@ -23,6 +23,10 @@ ifneq (${MBEDTLS_MAJOR}, 3)
+   $(error Error: TF-A only supports MbedTLS versions > 3.x)
+ endif
+ 
++# Some of the PSA functions are declared in multiple header files
++# that triggers this warning.
++TF_CFLAGS      	+=     	-Wno-error=redundant-decls
++
+ # Specify mbed TLS configuration file
+ ifeq (${PSA_CRYPTO},1)
+   MBEDTLS_CONFIG_FILE    ?=    "<drivers/auth/mbedtls/default_psa_mbedtls_config.h>"
+diff --git a/drivers/auth/mbedtls/mbedtls_crypto.mk b/drivers/auth/mbedtls/mbedtls_crypto.mk
+index bd36730..b66b64b 100644
+--- a/drivers/auth/mbedtls/mbedtls_crypto.mk
++++ b/drivers/auth/mbedtls/mbedtls_crypto.mk
+@@ -7,9 +7,6 @@
+ include drivers/auth/mbedtls/mbedtls_common.mk
+ 
+ ifeq (${PSA_CRYPTO},1)
+-	# Some of the PSA functions are declared in multiple header files
+-	# that triggers this warning.
+-	TF_CFLAGS      	+=     	-Wno-error=redundant-decls
+ 	MBEDTLS_SOURCES +=	drivers/auth/mbedtls/mbedtls_psa_crypto.c
+ else
+ 	MBEDTLS_SOURCES +=	drivers/auth/mbedtls/mbedtls_crypto.c
+-- 
+2.34.1
+

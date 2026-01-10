@@ -15,8 +15,14 @@ HSE_SUPPORT_CFG = " \
     file://hse_support.cfg \
 "
 
+FILESEXTRAPATHS:prepend := "${COREBASE}/meta/recipes-bsp/u-boot/files:"
+CVE_PATCHES = " \
+    file://CVE-2024-42040.patch \
+"
+
 SRC_URI = "git://github.com/nxp-auto-linux/u-boot.git;protocol=https;branch=release/bsp44.0-2022.04"
 SRC_URI += " \
+    ${CVE_PATCHES} \
     file://0001-Revert-arch-s32cc-ERR051257-shouldn-t-be-applied-for.patch \
     file://0001-Revert-s32cc-mmc-Enable-MMC_IO_VOLTAGE.patch \
     file://0001-tools-s32ccimage-add-reserved-member-for-struct-prog.patch \

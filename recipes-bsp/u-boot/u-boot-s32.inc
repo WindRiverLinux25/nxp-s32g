@@ -18,6 +18,7 @@ HSE_SUPPORT_CFG = " \
 FILESEXTRAPATHS:prepend := "${COREBASE}/meta/recipes-bsp/u-boot/files:"
 CVE_PATCHES = " \
     file://CVE-2024-42040.patch \
+    file://CVE-2025-24857.patch \
 "
 
 SRC_URI = "git://github.com/nxp-auto-linux/u-boot.git;protocol=https;branch=release/bsp44.0-2022.04"

@@ -1,0 +1,85 @@
+From 30677054d096cb3d94cd12330ee4f8e6b2b9acb9 Mon Sep 17 00:00:00 2001
+From: Zhantao Tang <zhantao.tang@windriver.com>
+Date: Wed, 21 Jan 2026 21:13:58 +0800
+Subject: [PATCH] pfe: remove 'packed' attribute of LLIST_t struct to fix
+ kmemleak issue
+
+In pfeng driver, there is a LLIST_t struct, which is a custom linked list.
+It is similar to list_head struct in kernel codes, but compared to list_head,
+the LLIST_t has one more 'packed' attribute, which may lead to unaligned
+pointers, then kmemleak system complains as following:
+
+  unreferenced object 0xffffff8805de83e0 (size 32):
+    comm "(udev-worker)", pid 266, jiffies 4294897086 (age 306.956s)
+    hex dump (first 32 bytes):
+      06 00 00 00 00 00 00 00 00 26 1d 07 88 ff ff ff  .........&......
+      50 84 de 05 88 ff ff ff 44 b4 aa 03 88 ff ff ff  P.......D.......
+    backtrace:
+      [<0000000012b94aef>] __kmem_cache_alloc_node+0x1d4/0x2d8
+      [<00000000b9cd7911>] __kmalloc+0x60/0x228
+      [<00000000d32a4d15>] oal_mm_malloc+0x1c/0x30 [pfeng]
+      [<000000005e1bc676>] pfe_if_db_add+0x140/0x198 [pfeng]
+      [<000000004eb77623>] pfe_platform_create_ifaces+0x4c8/0x878 [pfeng]
+      [<00000000ce91fc24>] pfe_platform_init+0x588/0x708 [pfeng]
+      [<0000000077d5e88a>] pfeng_drv_probe+0x9a4/0x10b0 [pfeng]
+      [<0000000056956825>] platform_probe+0x70/0xd8
+      [<00000000ff6b8fdd>] really_probe+0x150/0x2c0
+      [<000000003bf0f316>] __driver_probe_device+0x80/0x140
+      [<00000000548fba3e>] driver_probe_device+0xdc/0x178
+      [<00000000304b0416>] __driver_attach+0x98/0x1b8
+      [<0000000024db20e9>] bus_for_each_dev+0x84/0xf0
+      [<00000000a93a4f68>] driver_attach+0x2c/0x40
+      [<000000008a4dae47>] bus_add_driver+0xec/0x218
+      [<00000000e62c211e>] driver_register+0x64/0x138
+
+  ......
+
+  unreferenced object 0xffffff8808a26f80 (size 32):
+    comm "dhcpcd", pid 646, jiffies 4294900268 (age 294.292s)
+    hex dump (first 32 bytes):
+      33 33 00 00 00 01 26 6f a2 08 88 ff ff ff e6 6f  33....&o.......o
+      a2 08 88 ff ff ff 00 00 00 00 00 00 00 00 00 00  ................
+    backtrace:
+      [<0000000012b94aef>] __kmem_cache_alloc_node+0x1d4/0x2d8
+      [<00000000b9cd7911>] __kmalloc+0x60/0x228
+      [<00000000886a779b>] kzalloc+0x14/0x28 [pfeng]
+      [<0000000081f5be6b>] pfe_mac_db_add_addr+0x80/0x108 [pfeng]
+      [<0000000058873ed4>] pfe_phy_if_add_mac_addr+0x78/0x190 [pfeng]
+      [<0000000035906b66>] pfeng_addr_sync+0x80/0x118 [pfeng]
+      [<00000000279834a0>] pfeng_addr_mc_sync+0x28/0x40 [pfeng]
+      [<00000000a48add16>] __hw_addr_sync_dev+0xcc/0x180
+      [<000000008d5e200d>] pfeng_netif_set_rx_mode+0xb8/0x340 [pfeng]
+      [<00000000743a7609>] __dev_set_rx_mode+0x68/0xb0
+      [<00000000544582bd>] __dev_open+0x160/0x228
+      [<00000000ae9498b9>] __dev_change_flags+0x1ac/0x240
+      [<00000000ee54a2fc>] dev_change_flags+0x2c/0x80
+      [<000000004090fba9>] devinet_ioctl+0x320/0x698
+      [<000000003534f68c>] inet_ioctl+0x21c/0x240
+      [<000000001a1dce64>] sock_do_ioctl+0x68/0x128
+
+And the 'packed' attribute is not necessary to the linked list, so remove it
+to fix the above kmemleak issue.
+
+Upstream-Status: Pending
+
+Signed-off-by: Zhantao Tang <zhantao.tang@windriver.com>
+---
+ sw/common/public/linked_list.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/sw/common/public/linked_list.h b/sw/common/public/linked_list.h
+index afcc099..03df2b2 100644
+--- a/sw/common/public/linked_list.h
++++ b/sw/common/public/linked_list.h
+@@ -12,7 +12,7 @@
+ * @brief   This structure shall be used to link structures of data.
+ * @details Just put this anywhere into the structs which shall be linked.
+ */
+-typedef struct  __attribute__((packed)) LLIST_Struct
++typedef struct LLIST_Struct
+ {
+    struct LLIST_Struct *prNext;
+    struct LLIST_Struct *prPrev;
+-- 
+2.34.1
+

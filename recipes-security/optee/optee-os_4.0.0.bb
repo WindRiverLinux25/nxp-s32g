@@ -15,4 +15,5 @@ SRC_URI:nxp-s32g = "\
     file://0002-core-Define-section-attributes-for-clang.patch \
     file://0003-optee-enable-clang-support.patch \
     file://0004-core-link-add-no-warn-rwx-segments.patch \
+    file://CVE-2025-46733-nxp-s32g.patch \
 "

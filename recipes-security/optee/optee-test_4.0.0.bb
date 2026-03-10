@@ -14,9 +14,9 @@ LIC_FILES_CHKSUM:nxp-s32g = "file://LICENSE.md;md5=daa2bcccc666345ab8940aab1315a
 SRCREV = "79e49f95474d05a028f58a75c6c643f88e9b9295"
 
 FILESEXTRAPATHS:prepend := "${LAYER_PATH_meta-arm}/recipes-security/optee/${PN}:"
-URL:nxp-s32g ?= "git://github.com/nxp-auto-linux/optee_test.git;protocol=https"
-BRANCH:nxp-s32g ?= "release/bsp44.0-4.0"
-SRC_URI:nxp-s32g= "\
+URL = "git://github.com/nxp-auto-linux/optee_test.git;protocol=https"
+BRANCH = "release/bsp44.0-4.0"
+SRC_URI = "\
     ${URL};branch=${BRANCH} \
     file://run-ptest \
 "

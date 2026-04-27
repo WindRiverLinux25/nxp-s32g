@@ -22,7 +22,7 @@ SRC_URI += " \
 "
 
 PATCHTOOL = "git"
-PLATFORM = "s32g399ardb3"
+PLATFORM = "s32g274ardb2 s32g399ardb3"
 BUILD_TYPE = "release"
 
 ATF_S32G_ENABLE = "1"
@@ -42,6 +42,7 @@ BL33_HANDLE ??= ""
 DDRFW_HANDLE ??= ""
 
 DDR_FW_PATH ?= "/dev/null"
+DDR_FW_PATH_S32G2 ?= "/dev/null"
 
 HSE_ARGS = " \
               HSE_SUPPORT=1 \
@@ -116,6 +117,14 @@ do_compile:prepend() {
     if [ "${DDR_FW_PATH}" -ef "/dev/null" ]; then
         bbwarn "Please set a valid DDR_FW_PATH value, or else, the output WIC image boot should fail!"
     fi
+
+    if [ ! -e "${DDR_FW_PATH_S32G2}" ]; then
+        bbfatal_log "Please check and set a valid DDR_FW_PATH_S32G2 value!"
+    fi
+
+    if [ "${DDR_FW_PATH_S32G2}" -ef "/dev/null" ]; then
+        bbwarn "Please set a valid DDR_FW_PATH_S32G2 value, or else, the output WIC image boot should fail!"
+    fi
 }
 
 do_compile() {
@@ -170,7 +179,12 @@ do_compile() {
                          "
             fi
 
-            oe_runmake -C ${S} DTB_FILE_NAME=${dtb} BUILD_BASE=$build_base PLAT=${plat} BL33=$bl33_bin BL33DIR=$bl33_dir MKIMAGE_CFG=$uboot_cfg MKIMAGE=mkimage $optee_arg $hse_fw_dir $fip_location $bl_keys DDR_FW_BIN_PATH=${DDR_FW_PATH} all
+            ddr_fw_path="${DDR_FW_PATH}"
+            if echo $plat | grep -q s32g2; then
+                ddr_fw_path="${DDR_FW_PATH_S32G2}"
+            fi
+
+            oe_runmake -C ${S} DTB_FILE_NAME=${dtb} BUILD_BASE=$build_base PLAT=${plat} BL33=$bl33_bin BL33DIR=$bl33_dir MKIMAGE_CFG=$uboot_cfg MKIMAGE=mkimage $optee_arg $hse_fw_dir $fip_location $bl_keys DDR_FW_BIN_PATH=${ddr_fw_path} all
 
             if ${SCMI_DTB_NODE_CHANGE}; then
                 oe_runmake -C "${S}" dtbs

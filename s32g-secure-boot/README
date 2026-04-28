@@ -3,7 +3,7 @@
 1. About this document
 ======================
 This document provides detail description about how to enable secure
-boot on S32G399A-RDB3 board.
+boot on S32G274A-RDB2 and S32G399A-RDB3 boards.
 It includes the implementation principles of secure boot, implementation
 example step by step and so on.
 
@@ -40,12 +40,12 @@ To use secure boot feature, assume that you are:
 
 Hardware Preparations:
  - A host machine installed with wrlinux product.
- - S32G399A-RDB3 development boards.
+ - S32G274A-RDB2 and S32G399A-RDB3 development boards.
  - An SD Card.
 
 Jumper/Switch configuration for SD boot:
 
-S32G399A-RDB3:
+S32G274A-RDB2/S32G399A-RDB3:
 SW3: ON
 SW4: bit7 ON
 SW5: All bits OFF
@@ -56,7 +56,7 @@ SW10: bit1 ON, bit2 OFF
 
 Jumper/Switch configuration for EMMC boot:
 
-S32G399A-RDB3:
+S32G274A-RDB2/S32G399A-RDB3:
 SW3: OFF
 SW4: bit6 bit7 ON
 SW5: All bits OFF
@@ -67,7 +67,7 @@ SW10: bit1 ON, bit2 OFF
 
 Jumper/Switch configuration for QSPI boot:
 
-S32G399A-RDB3:
+S32G274A-RDB2/S32G399A-RDB3:
 SW3: OFF
 SW4: All bits OFF
 SW5: All bits OFF
@@ -78,7 +78,7 @@ SW10: bit1 ON, bit2 OFF
 
 Software Preparations:
  - Wrlinux product with nxp-s32g BSP
- - HSE firmware for 399A SoC
+ - HSE firmware for S32G274A/399A SoC
 
 3. Secure Boot Process
 ======================
@@ -101,7 +101,9 @@ by the preceding step. Thus, the secure boot flow is the following:
 Apply for assess right with NXP and then download HSE firmware from below link
 https://nxp.flexnetoperations.com/control/frse/product?child_plneID=820667
 
-HSE FW 0.2.64.0 Release is for S32G399A plarform
+HSE FW 0.2.64.0 Release is for S32G274A platform
+The HSE firmware file is rev2.1_s32g2xx_hse_fw_0.1.0_2.64.0_pb250127.bin.pink
+HSE FW 0.2.64.0 Release is for S32G399A platform
 The HSE firmware file is s32g3xx_hse_fw_0.20.0_2.64.0_pb250127.bin.pink
 
 3.2 Build nxp-s32g BSP With Secure Boot Feature
@@ -317,6 +319,7 @@ QSPI boot mode:
 -------------------
 There is a fitImage in boot partition, it can support below board.
 
+S32G274A-RDB2
 S32G399A-RDB3
 
 Load the fitImage with below command

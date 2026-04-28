@@ -68,6 +68,11 @@ do_compile:append() {
                       DDRFW_KEY=${SECBOOT_SIGN_KEYDIR}/${RSA_PRIV_DDRFW} \
                      "
 
+            ddr_fw_path="${DDR_FW_PATH}"
+            if echo $plat | grep -q s32g2; then
+                ddr_fw_path="${DDR_FW_PATH_S32G2}"
+            fi
+
             i=$(expr $i + 1);
             for dtb in ${ATF_DTB}; do
                 j=$(expr $j + 1)
@@ -78,7 +83,7 @@ do_compile:append() {
                        -F -k "${UBOOT_SIGN_KEYDIR}" \
                        -K "${B}/${type}/${plat}/${BUILD_TYPE}/fdts/${dtb}" \
                        -r ${ATF_BINARIES}/fitImage-linux
-                    oe_runmake -C ${S} DTB_FILE_NAME=${dtb} BUILD_BASE=$build_base PLAT=${plat} BL33=$bl33_bin BL33DIR=$bl33_dir MKIMAGE_CFG=$uboot_cfg MKIMAGE=mkimage $optee_arg $hse_fw_dir $fip_location $bl_keys DDR_FW_BIN_PATH=${DDR_FW_PATH} all
+                    oe_runmake -C ${S} DTB_FILE_NAME=${dtb} BUILD_BASE=$build_base PLAT=${plat} BL33=$bl33_bin BL33DIR=$bl33_dir MKIMAGE_CFG=$uboot_cfg MKIMAGE=mkimage $optee_arg $hse_fw_dir $fip_location $bl_keys DDR_FW_BIN_PATH=${ddr_fw_path} all
                 fi
             done
             unset j

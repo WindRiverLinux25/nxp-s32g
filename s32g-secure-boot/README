@@ -125,6 +125,12 @@ Detail steps as below:
 	HSE_FW_VERSION_S32G3 = "0.2.51.0"
 	HSE_FW_NAME_S32G2 = "rev2.0_s32g2xx_hse_fw_0.1.0_1.0.14_pb240319.bin.pink"
 	HSE_FW_NAME_S32G3 = "rev1.1_s32g3xx_hse_fw_0.20.0_2.51.0_pb240404.bin.pink"
+	below setting is required for PKCS#11 HSE support
+	CUSTOMER_RECIPES:openembedded-layer += 'ccid'
+	CUSTOMER_RECIPES:openembedded-layer += 'opensc'
+	CUSTOMER_RECIPES:openembedded-layer += 'pcsc-lite'
+	BB_NO_NETWORK = '0'
+	IMAGE_INSTALL += "pkcs11-hse pkcs11-hse-examples opensc"
 	below setting for RSA private key is optional
 	FIP_SIGN_KEYDIR = "<path of customer own RSA private key>"
 	HSE_SEC_PRI_KEY = "<name of customer own RSA private key>"

@@ -384,6 +384,10 @@ functionality, help to verify HSE. The steps are as following:
         HSE_FW_NAME_S32G3 = "firmware-name-for-s32g3"
 
     and
+        BB_NO_NETWORK = '0'
+        CUSTOMER_RECIPES:openembedded-layer += 'ccid'
+        CUSTOMER_RECIPES:openembedded-layer += 'opensc'
+        CUSTOMER_RECIPES:openembedded-layer += 'pcsc-lite'
         IMAGE_INSTALL += "pkcs11-hse pkcs11-hse-examples opensc"
 
     in the project <build-dir>/conf/local.conf.

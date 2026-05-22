@@ -1,0 +1,75 @@
+From 9cb720f50e934170f3939c7a26f172d86c533485 Mon Sep 17 00:00:00 2001
+From: Xulin Sun <xulin.sun@windriver.com>
+Date: Wed, 27 May 2026 00:56:57 +0000
+Subject: [PATCH] pfeng_slave: fix synchronous external abort on reboot
+
+During system reboot/shutdown, the PFE master's shutdown callback is
+invoked before the slave's. This happens because the kernel's deferred
+probe mechanism calls device_reorder_to_tail() during boot, moving the
+master device (46000000.pfe) toward the end of devices_kset list while
+the slave (46000000.pfe_slave) is never moved. Since device_shutdown()
+walks the list from tail to head, the master is processed first.
+
+The master's pfeng_drv_shutdown() powers off the PFE controller, making
+all CBUS registers inaccessible. When the slave's shutdown then calls
+pfeng_drv_remove(), it attempts register access on the powered-off
+hardware, triggering a synchronous external abort:
+
+  Internal error: synchronous external abort: 0000000096000010 [#1]
+  pc : readl+0x0/0x18 [pfeng_slave]
+  lr : pfe_hif_chnl_cfg_ltc_get+0x24/0x38 [pfeng_slave]
+  Call trace:
+   readl+0x0/0x18 [pfeng_slave]
+   pfe_hif_get_master_up+0x3c/0x98 [pfeng_slave]
+   pfe_idex_master_rpc+0x48/0x198 [pfeng_slave]
+   pfeng_netif_remove+0x6c/0x78 [pfeng_slave]
+   pfeng_drv_remove+0x68/0x260 [pfeng_slave]
+   pfeng_drv_shutdown+0x18/0x30 [pfeng_slave]
+
+Fix by replacing pfeng_drv_shutdown() with a minimal software-only
+cleanup that avoids all hardware register access:
+- Mark IDEX as down to prevent further RPC attempts
+- Cancel pending IHC work items without waiting (as the work handlers
+  access HIF registers which are no longer accessible)
+- Clear driver data
+
+The system is about to reset so full hardware teardown is unnecessary.
+
+Upstream-Status: Pending
+
+Signed-off-by: Xulin Sun <xulin.sun@windriver.com>
+---
+ sw/linux-pfeng/pfeng-slave-drv.c | 17 ++++++++++++++++-
+ 1 file changed, 16 insertions(+), 1 deletion(-)
+
+diff --git a/sw/linux-pfeng/pfeng-slave-drv.c b/sw/linux-pfeng/pfeng-slave-drv.c
+index 15a55f5..6365d00 100644
+--- a/sw/linux-pfeng/pfeng-slave-drv.c
++++ b/sw/linux-pfeng/pfeng-slave-drv.c
+@@ -732,7 +732,22 @@ SIMPLE_DEV_PM_OPS(pfeng_drv_pm_ops,
+  */
+ static void pfeng_drv_shutdown(struct platform_device *pdev)
+ {
+-	pfeng_drv_remove(pdev);
++	struct device *dev = &pdev->dev;
++	struct pfeng_priv *priv = dev_get_drvdata(dev);
++
++	/*
++	 * During shutdown/reboot the PFE master driver has already powered off
++	 * the PFE controller, making all CBUS registers inaccessible.  Calling
++	 * the full pfeng_drv_remove() path would trigger synchronous external
++	 * aborts on any readl/writel to PFE MMIO space.  Just mark the driver
++	 * down and release software resources that don't touch hardware.
++	 */
++	if (priv) {
++		pfe_idex_mark_down();
++		cancel_work(&priv->ihc_rx_work);
++		cancel_work(&priv->ihc_tx_work);
++		dev_set_drvdata(dev, NULL);
++	}
+ }
+ 
+ /* platform data */
+-- 
+2.35.5
+

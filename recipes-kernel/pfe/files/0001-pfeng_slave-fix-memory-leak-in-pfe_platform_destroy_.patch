@@ -1,0 +1,84 @@
+From 76c526e3f1aa133720032330185d8068816bed24 Mon Sep 17 00:00:00 2001
+From: Xulin Sun <xulin.sun@windriver.com>
+Date: Fri, 22 May 2026 05:28:45 +0000
+Subject: [PATCH] pfeng_slave: fix memory leak in pfe_platform_destroy_ifdb()
+
+Issue: LIN1025-14807
+
+When unloading the pfeng_slave module, pfe_platform_destroy_ifdb() skips
+destroying phy_if objects with the comment "it's too late for IHC". This
+causes memory leaks of the phy_if struct (192 bytes), its name string
+(e.g. "hif2", "hif3"), and the associated mac_db for each physical
+interface.
+
+kmemleak reports these unreferenced objects after modprobe -r:
+
+  unreferenced object (size 8):    hif2/hif3 name strings
+    oal_mm_malloc <- pfe_phy_if_create+0x64
+  unreferenced object (size 192):  phy_if structs
+    oal_mm_malloc <- pfe_phy_if_create+0x30
+  unreferenced object (size 192):  mac_db
+    oal_mm_malloc <- pfe_mac_db_create+0x20
+
+Fix by calling pfe_phy_if_destroy() in pfe_platform_destroy_ifdb() to
+properly free the local memory. Since pfe_phy_if_destroy() issues an RPC
+call via pfe_idex_master_rpc() and at this point in the teardown sequence
+the IDEX IHC client has already been unregistered (pfe_idex_fini() sets
+ihc_client to NULL), add a NULL check for ihc_client in
+pfe_idex_send_frame() to prevent the following kernel panic:
+
+  Unable to handle kernel paging request at virtual address ffffffffffffff80
+  pc : pfe_hif_drv_client_xmit_sg_pkt+0x48/0x1d0 [pfeng_slave]
+  lr : pfe_idex_send_frame+0xcc/0x1f8 [pfeng_slave]
+  Call trace:
+   pfe_hif_drv_client_xmit_sg_pkt+0x48/0x1d0 [pfeng_slave]
+   pfe_idex_send_frame+0xcc/0x1f8 [pfeng_slave]
+   pfe_idex_request_send+0xf8/0x350 [pfeng_slave]
+   pfe_idex_rpc+0x118/0x2e0 [pfeng_slave]
+   pfe_idex_master_rpc+0x184/0x198 [pfeng_slave]
+   pfe_phy_if_destroy+0x7c/0x150 [pfeng_slave]
+   pfe_platform_destroy_ifdb+0xa4/0x210 [pfeng_slave]
+   pfe_platform_remove+0x2c/0xc8 [pfeng_slave]
+   pfeng_drv_remove+0x88/0x260 [pfeng_slave]
+
+Upstream-Status: Pending
+
+Signed-off-by: Xulin Sun <xulin.sun@windriver.com>
+---
+ sw/pfe_platform/hw/s32g/pfe_platform_slave.c | 3 +--
+ sw/pfe_platform/src/pfe_idex.c               | 5 +++++
+ 2 files changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/sw/pfe_platform/hw/s32g/pfe_platform_slave.c b/sw/pfe_platform/hw/s32g/pfe_platform_slave.c
+index 86dd531..6d4d018 100644
+--- a/sw/pfe_platform/hw/s32g/pfe_platform_slave.c
++++ b/sw/pfe_platform/hw/s32g/pfe_platform_slave.c
+@@ -510,8 +510,7 @@ static void pfe_platform_destroy_ifdb(pfe_platform_t *platform)
+ 				NXP_LOG_ERROR("Could not remove phy_if DB entry\n");
+ 			}
+ 
+-			/* Don't destroy PHY_IF, it's too late for IHC */
+-			phy_if = NULL;
++			pfe_phy_if_destroy(phy_if);
+ 			entry = NULL;
+ 
+ 			ret = pfe_if_db_get_next(platform->phy_if_db, session_id, &entry);
+diff --git a/sw/pfe_platform/src/pfe_idex.c b/sw/pfe_platform/src/pfe_idex.c
+index 0820ed0..2665c7e 100644
+--- a/sw/pfe_platform/src/pfe_idex.c
++++ b/sw/pfe_platform/src/pfe_idex.c
+@@ -845,6 +845,11 @@ static errno_t pfe_idex_send_frame(pfe_ct_phy_if_id_t dst_phy, pfe_idex_frame_ty
+ 	hif_drv_sg_list_t sg_list = { 0U };
+ 	uint16_t data_len_tmp = data_len;
+ 
++	if (NULL == pfe_idex.ihc_client)
++	{
++		NXP_LOG_WARNING("IDEX IHC client not available, skip frame TX\n");
++		return EPERM;
++	}
+ 	/*	Get IDEX frame buffer */
+ 	idex_hdr = oal_mm_malloc_contig_named_aligned_nocache(PFE_CFG_TX_MEM, (addr_t)(sizeof(pfe_idex_frame_header_t)) + (addr_t)data_len_tmp, 0U);
+ 	if (NULL == idex_hdr)
+-- 
+2.35.5
+

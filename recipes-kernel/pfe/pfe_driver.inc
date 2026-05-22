@@ -20,6 +20,7 @@ SRC_URI:append = " \
 	file://0001-pfe-phylink-set-phy-interface-mode-to-SGMII-when-in-.patch \
 	file://0001-pfeng-update-to-compatible-with-v6.12-kernel.patch \
 	file://0001-pfe-remove-packed-attribute-of-LLIST_t-struct-to-fix.patch \
+	file://0001-pfeng_slave-fix-memory-leak-in-pfe_platform_destroy_.patch \
 "
 
 S = "${WORKDIR}/git"

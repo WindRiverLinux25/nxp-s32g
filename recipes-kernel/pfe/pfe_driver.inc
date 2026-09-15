@@ -17,10 +17,7 @@ SRC_URI:append = " \
         file://0001-pfe-slave-add-mutex_unlock-in-pfe_emac_destroy.patch \
 	file://0001-pfe-slave-use-new-macro-to-replace-the-oal_mutex_ini.patch \
 	file://0001-pfe-slave-extends-the-wait-time.patch \
-	file://0001-pfe-phylink-set-phy-interface-mode-to-SGMII-when-in-.patch \
-	file://0001-pfeng-update-to-compatible-with-v6.12-kernel.patch \
 	file://0001-pfe-remove-packed-attribute-of-LLIST_t-struct-to-fix.patch \
-	file://0001-pfeng_slave-fix-memory-leak-in-pfe_platform_destroy_.patch \
 	file://0001-pfeng_slave-fix-synchronous-external-abort-on-reboot.patch \
 "
 

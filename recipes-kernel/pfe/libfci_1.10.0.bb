@@ -3,7 +3,7 @@ require pfe_common.inc
 DESCRIPTION = "libFCI networking acceleration library"
 HOMEPAGE = "https://source.codeaurora.org/external/autobsps32/extra/pfeng"
 LICENSE = "GPL-2.0-only"
-LIC_FILES_CHKSUM = "file://LICENSE-GPL2.txt;md5=5dcdfe25f21119aa5435eab9d0256af7"
+LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=5dcdfe25f21119aa5435eab9d0256af7"
 
 PR = "r0"
 

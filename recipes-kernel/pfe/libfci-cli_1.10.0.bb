@@ -3,7 +3,7 @@ require pfe_common.inc
 DESCRIPTION = "LibFCI Example: Command line tool for configuration of PFE"
 HOMEPAGE = "https://source.codeaurora.org/external/autobsps32/extra/pfeng"
 LICENSE = "BSD-3-Clause"
-LIC_FILES_CHKSUM = "file://LICENSE-BSD3.txt;md5=a76ce5ba347a9a89c4a886e042668dbb"
+LIC_FILES_CHKSUM = "file://LICENSES/BSD-3-Clause.txt;md5=a76ce5ba347a9a89c4a886e042668dbb"
 
 PR = "r0"
 

@@ -15,12 +15,12 @@ Signed-off-by: Kevin Hao <kexin.hao@windriver.com>
  2 files changed, 10 insertions(+), 1 deletion(-)
 
 diff --git a/include/configs/s32-cc.h b/include/configs/s32-cc.h
-index c405a2ced4..c372f3f935 100644
+index ad97b256..ec3adce0 100644
 --- a/include/configs/s32-cc.h
 +++ b/include/configs/s32-cc.h
-@@ -134,6 +134,14 @@
+@@ -144,6 +144,14 @@
+ 	"ipaddr=" S32CC_IPADDR "\0"\
  	"loadtftpfdt=tftp ${fdt_addr} ${fdt_file};\0" \
- 	"loadfitimage=fatload mmc ${mmcdev}:${mmcpart} ${fitimage_addr} ${fitimage}\0" \
  	"loadtftpimage=tftp ${loadaddr} ${image};\0" \
 +	"initrd_file=initramfs\0" \
 +	"loadinitrd=fatload mmc ${mmcdev}:${mmcpart} ${ramdisk_addr} ${initrd_file};\0" \
@@ -34,10 +34,10 @@ index c405a2ced4..c372f3f935 100644
  		"root=/dev/nfs " \
  		"ip=dhcp nfsroot=${serverip}:${nfsroot},v3,tcp " \
 diff --git a/include/configs/s32.h b/include/configs/s32.h
-index 22192c027c..c91844ae87 100644
+index 21a38737..50fbad1a 100644
 --- a/include/configs/s32.h
 +++ b/include/configs/s32.h
-@@ -56,9 +56,10 @@
+@@ -49,9 +49,10 @@
  		EXTRA_BOOT_ARGS "\0" \
  	"mmcboot=echo Booting from mmc ...; " \
  		"run mmcargs; " \
@@ -51,4 +51,3 @@ index 22192c027c..c91844ae87 100644
  	"mmcpart=" __stringify(MMC_PART_FAT) "\0" \
 -- 
 2.34.1
-

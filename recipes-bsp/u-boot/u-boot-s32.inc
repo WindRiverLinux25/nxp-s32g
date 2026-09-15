@@ -21,7 +21,7 @@ CVE_PATCHES = " \
     file://CVE-2025-24857.patch \
 "
 
-SRC_URI = "git://github.com/nxp-auto-linux/u-boot.git;protocol=https;branch=release/bsp44.0-2022.04"
+SRC_URI = "git://github.com/nxp-auto-linux/u-boot.git;protocol=https;branch=release/bsp46.0-2022.04"
 SRC_URI += " \
     ${CVE_PATCHES} \
     file://0001-Revert-arch-s32cc-ERR051257-shouldn-t-be-applied-for.patch \
@@ -34,13 +34,12 @@ SRC_URI += " \
     ${@bb.utils.contains('HSE_SEC_ENABLED', '1', '${HSE_SUPPORT_CFG}', '', d)} \
     file://0001-s32ccimage.c-Use-PATH_MAX-for-path-length.patch \
     file://0001-hse-enable-eFUSE-power-on-s32g399-RDB3-platform.patch \
-    file://0001-phy-s32cc-serdes-configure-REF_USE_PAD-bit-during-re.patch \
     file://0001-s32-env-support-for-booting-up-fitImage.patch \
     file://0001-s32-env-Add-support-to-load-the-initrd-in-mmcboot.patch \
     ${@bb.utils.contains('DISTRO_FEATURES', 'optee', 'file://optee_config.cfg', '', d)} \
 "
 
-SRCREV = "9a003232781ee9999d7e41a1cd62024400794560"
+SRCREV = "4144acbebe9d5bf7f492e05d2f66b43ebde0b081"
 
 PATCHTOOL = "git"
 SCMVERSION = "y"

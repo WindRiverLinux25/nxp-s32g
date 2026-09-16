@@ -532,7 +532,7 @@ The default firmware names:
     s32g_pfe_util.fw
 
 The latest verified firmware version:
-    1.11.0
+    1.12.0
 
 For more detail info about the firmware, please refer to the document:
     PFE_Firmware_S32G_UserManual.pdf
@@ -629,7 +629,7 @@ There are 4 LLCE firmwares:
 	ppe_rx.bin
 
 The latest verified firmware version:
-    1.0.9
+    1.0.12
 
 For more detail info about the firmware, please refer to the document:
     LLCE_firmware_user_guide.pdf

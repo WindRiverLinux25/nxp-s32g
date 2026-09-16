@@ -27,6 +27,8 @@ This BSP supports the following boards:
                            SDK bsp44.0-6.6.85-rt.
   - 2026/06 (LINUXPG-3013): WindRiver Linux LTS25 RCPL10. Support RDB2 v2.1 board for both standard and
                            preempt-rt based on NXP bsp44.0-6.6.85-rt.
+  - 2026/10 (LIN1025-14748): WindRiver Linux LTS25 RCPL12. Full official NXP BSP46 integration for both
+                            standard and preempt-rt, updated to NXP bsp46.0-6.12.19.
 
 3. BSP Features
 ===============
@@ -86,7 +88,7 @@ S32G274A-RDB2:
     CPU Revision:           rev. 2.1
     Board Serial:           NXP S32G27x
     BootLoader:             U-Boot
-    BootLoader Version:     U-Boot 2022.04+g359553e4 (May 13 2025 - 06:57:56 +0000)
+    BootLoader Version:     U-Boot 2022.04+g2f390eea (Nov 14 2025 - 13:59:01 +0000)
 
 
 S32G399A-RDB3:
@@ -94,5 +96,5 @@ S32G399A-RDB3:
     CPU Revision:           rev. 1.1
     Board Serial:           NXP S32G3xx
     BootLoader:             U-Boot
-    BootLoader Version:     U-Boot 2022.04+gd8e5ca9e (May 13 2025 - 06:57:56 +0000)
+    BootLoader Version:     U-Boot 2022.04+g2f390eea (Nov 14 2025 - 13:59:01 +0000)
 

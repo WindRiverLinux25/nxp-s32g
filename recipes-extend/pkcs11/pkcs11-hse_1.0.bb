@@ -10,11 +10,10 @@ DEPENDS = "openssl libp11"
 RDEPENDS:${PN} = "opensc pcsc-lite ccid"
 
 URL ?= "git://github.com/nxp-auto-linux/pkcs11-hse.git;protocol=https"
-BRANCH ?= "release/bsp44.0"
+BRANCH ?= "release/bsp46.0"
 SRC_URI = "${URL};branch=${BRANCH}"
 
-SRCREV = "0542cc5a248cc2d35af339c38270e2059a927b31"
-SRC_URI[sha256sum] = "b529fcbbb8f4347310d433162b81291da5955f9916d5c6ad5f4dc316ef6aef14"
+SRCREV = "54f27518cc6a7fc17014345ee5daac71ccfd22c8"
 
 SRC_URI += " \
     file://0001-pkcs11-hse-Makefile-using-internal-compile-variables.patch \

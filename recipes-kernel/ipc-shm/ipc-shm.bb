@@ -11,14 +11,12 @@ LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/BSD-3-Clause;md5=550794465ba0ec
 inherit module deploy
 
 URL ?= "git://github.com/nxp-auto-linux/ipc-shm.git;protocol=https"
-BRANCH ?= "release/SW32G_IPCF_4.9.0_D2310"
+BRANCH ?= "release/SW32G_IPCF_4.11.0"
 SRC_URI = "${URL};branch=${BRANCH}"
-SRCREV = "e90d0a18eb6d53f1faa09739f3d1c00f6f4eed8c"
+SRCREV = "92c3b834f3e175cf59782099d2b2df2b63177996"
 
 SRC_URI:append = " \
 	file://0001-shm-sample-use-strncpy-instead-of-strcpy.patch \
-	file://0001-ipc-shm-Drop-the-THIS_MODULE-argument-from-class_cre.patch \
-	file://0001-ipc-shm-change-return-type-to-void-to-compatible-wit.patch \
 "
 
 S = "${WORKDIR}/git"

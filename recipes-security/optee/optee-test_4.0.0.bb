@@ -15,7 +15,7 @@ SRCREV = "79e49f95474d05a028f58a75c6c643f88e9b9295"
 
 FILESEXTRAPATHS:prepend := "${LAYER_PATH_meta-arm}/recipes-security/optee/${PN}:"
 URL = "git://github.com/nxp-auto-linux/optee_test.git;protocol=https"
-BRANCH = "release/bsp44.0-4.0"
+BRANCH = "release/bsp46.0-4.0"
 SRC_URI = "\
     ${URL};branch=${BRANCH} \
     file://run-ptest \

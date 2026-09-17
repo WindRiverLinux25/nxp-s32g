@@ -8,7 +8,7 @@ FILESEXTRAPATHS:prepend := "${LAYER_PATH_meta-arm}/recipes-security/optee/${PN}:
 SRCREV = "5bc04d55cc67a75824cad7a8ee4b29090ee11187"
 
 URL = "git://github.com/nxp-auto-linux/optee_os;protocol=https"
-BRANCH = "release/bsp44.0-4.0"
+BRANCH = "release/bsp46.0-4.0"
 SRC_URI = "\
     ${URL};branch=${BRANCH} \
     file://0001-allow-setting-sysroot-for-libgcc-lookup.patch \
